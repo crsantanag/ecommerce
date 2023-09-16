@@ -1,0 +1,15 @@
+.iniciar_sesion {
+    background-color: rgb(230, 230, 230);
+    text-align: left;
+
+}
+
+.contenedor_500 {
+    background-color: rgb(230, 230, 230);
+    margin-left: 80px;
+    margin-right: 80px;
+    width: 500px;
+    border: solid black;
+    border-radius: 2%;
+
+}

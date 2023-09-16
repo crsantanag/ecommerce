@@ -1,0 +1,77 @@
+.compraCD {
+    text-align: center;
+    background-color: rgb(230, 230, 230);
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+.compraCD_contenedor {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
+.compraCD_left_content {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    margin-right: 10px; 
+}
+
+.compraCD_center_content {
+    flex: 1;
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+    padding: 20px;
+}
+
+.compraCD_rigth_content {
+    flex: 1;
+    text-align: center;
+    padding: 20px;
+    margin-right: 25px;
+    margin-bottom: 25px;
+    margin-top: 25px;
+    border: solid black;
+    border-radius: 2%;
+}
+
+.compraCD_boton_restasuma {
+    width: 50px;
+    font-size: 18px;
+    border: 1px solid black
+}
+
+.compraCD_cantidad {
+    display: inline-block;
+    width: 100px;
+    font-size: 18px;
+}
+
+.compraCD_boton_comprar {
+    width: 200px;
+    font-size: 18px;
+    align-items: center;
+    text-align: center;
+    background-color: #e9f0fd;
+    color: black;
+    border: 1px solid black;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/*
+@media (max-width: 768px) {
+    .catalogo_contenedor {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+*/
+
+@media (max-width: 576px) {
+    .compraCD_contenedor {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,45 @@
+.contacto {
+  text-align: center;
+  background-color: rgb(230, 230, 230);
+}
+
+.contacto_mensaje {
+  display: 'flex';
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  width: 500px;
+}
+
+.nombre {
+      width: 80px;
+      text-align: left;
+  }
+
+.email{
+    width: 80px;
+    text-align: left;
+}
+
+.mensaje{
+  width: 80px;
+  text-align:start;
+
+}
+
+.campo {
+    width: 300px;
+  }
+
+.boton_contacto {
+  width: 380px;
+  font-size: 18px;
+  align-items: center;
+  text-align: center;
+  background-color: #e9f0fd;
+  color: black;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 5px;
+}
+

@@ -1,0 +1,13 @@
+* {
+  margin: 0;
+  padding: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+ /* border: solid red */
+}
+
+body {
+  font-family: 'Roboto', sans-serif, Arial, Helvetica, sans-serif;
+  background-color: rgb (230, 230, 230);
+}

@@ -1,0 +1,41 @@
+.texto {
+    text-align: center;
+    align-items: 'center';
+    justify-content:space-between;
+    background-color: rgb(230, 230, 230);
+}
+
+.mostrar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 50px;
+    align-items: 'center';
+    padding-top: 0;
+  }
+
+.left-content {
+    flex: 1;
+    text-align: left;
+    justify-content: left;
+    align-items: 'left';
+
+  }
+
+.right-content {
+    flex: 1;
+    margin-left: 20px;
+  }
+
+.right-content img{
+    /* display: inline-block; */
+    max-width: 600px;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .right-content img{
+    width: 384px;
+  }
+}
+

@@ -1,0 +1,13 @@
+.portada_inicio {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.portada_imagen img {
+
+    align-items: center;
+    justify-content: center;
+}
+
