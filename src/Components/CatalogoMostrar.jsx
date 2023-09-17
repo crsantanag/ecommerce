@@ -50,29 +50,18 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     {"tipo": "CD", "codigo": 33, "grupo": "Santana", "nombre": "Ultimate", "precio": 12990, "stock": 5, "url": "https://res.cloudinary.com/dtcg4qg4u/image/upload/v1693961741/Santana_-_Ultimate_te9b4e.jpg"}
   ];
 
-console.log ('CATALOGO MOSTRAR *** /// +++')
+  console.log ('CATALOGO MOSTRAR *** /// +++')
 
   const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
   const [productosPorPagina, setProductosPorPagina] = useState (pp)
 
+  const po =  sessionStorage.getItem('productosPorOrden');
+  const [productosPorOrden, setProductosPorOrden] = useState (po)
+
   const pa = parseInt(sessionStorage.getItem('paginaActual'));
   const [paginaActual, setPaginaActual] = useState (pa)
-  
-  const [productosPorOrden, setProductosPorOrden] = useState ('')
 
   const [productosDisplay, setProductosDisplay] = useState ([])
-
-// LEER DEL LOCAL STORAGE ESTAS VARIABLES
-{/*
-const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
-setProductosPorPagina (pp)
-
-const pa = parseInt(sessionStorage.getItem('paginaActual'));
-setPaginaActual (pa)
-
-const sp = parseInt (sessionStorage.getItem('scrollPosition'))
-window.scrollTo(0, sp)
-*/}
 
   const productosFiltro = productos
     .filter ( (producto) => ( producto.tipo == filtro || 
@@ -90,12 +79,12 @@ window.scrollTo(0, sp)
 
   switch (productosPorOrden) {
     case "N-":
-      productosFiltro.sort((a, b) => a.grupo.localeCompare(b.grupo));
+      productosFiltro.sort((a, b) => a.nombre.localeCompare(b.nombre));
       console.log ('ooo entró a A-Z', productosFiltro)
       break;
     
     case "N+":
-      productosFiltro.sort((a, b) => b.grupo.localeCompare(a.grupo));
+      productosFiltro.sort((a, b) => b.nombre.localeCompare(a.nombre));
       break;
 
     case "P-":
@@ -193,10 +182,9 @@ window.scrollTo(0, sp)
 
   }
 
-  const handleSeleccionDisplay = (event) => {
-    const variableIntermedia = event.target.value
+  const handleSeleccionPagina = (event) => {
+    const pp = Math.trunc (parseInt(event.target.value,10))
 
-    const pp = Math.trunc (parseInt (variableIntermedia,10))
     setProductosPorPagina (pp )
     console.log ('°°° Nueva productosPorPagina ', pp, productosPorPagina)
 
@@ -210,11 +198,13 @@ window.scrollTo(0, sp)
   }
 
   const handleSeleccionOrdenar = (event) => {
-    const variableIntermedia = event.target.value
-    setProductosPorOrden(variableIntermedia)
+    const po = event.target.value
+    setProductosPorOrden(po)
+    sessionStorage.setItem('productosPorOrden', po)
     
     const n = 1
     sessionStorage.setItem('paginaActual', n);
+
 
     setPaginaActual (1)
   }
@@ -247,7 +237,7 @@ window.scrollTo(0, sp)
           </label>
           <select id="display" 
                   value={ productosPorPagina } 
-                  onChange={ handleSeleccionDisplay }>
+                  onChange={ handleSeleccionPagina }>
                   <option value="4">-- Seleccionar --</option>
                   <option value="4"> 4 x página</option>
                   <option value="8"> 8 x página</option>
@@ -262,8 +252,8 @@ window.scrollTo(0, sp)
                   value={ productosPorOrden } 
                   onChange={ handleSeleccionOrdenar }>
                   <option value="">-- Seleccionar --</option>
-                  <option value="N-">Nombre Grupo A-Z</option>
-                  <option value="N+">Nombre Grupo Z-A</option>
+                  <option value="N-">Nombre Nombre A-Z</option>
+                  <option value="N+">Nombre Nombre Z-A</option>
                   <option value="P-">Precio menor</option>
                   <option value="P+">Precio mayor</option>
           </select>

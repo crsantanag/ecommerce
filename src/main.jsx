@@ -9,6 +9,9 @@ import { HomePage }  from './Pages/HomePage.jsx'
   const productosPorPagina = 4;
   sessionStorage.setItem('productosPorPagina', productosPorPagina);
 
+  const productosPorOrden =''
+  sessionStorage.setItem('productosPorOrden', productosPorOrden)
+
   const scrollPosition = 0;
   sessionStorage.setItem('scrollPosition', scrollPosition);
 
