@@ -245,7 +245,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
                   <option value="32">32 x página</option>
                   <option value="64">64 x página</option>
           </select>
-          <label  className='reserva_hora' 
+          <label  className='reserva_hora'
                   htmlFor="horas">&nbsp;&nbsp;Ordenar por :&nbsp;&nbsp;
           </label>
           <select id="orden"
@@ -253,7 +253,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
                   onChange={ handleSeleccionOrdenar }>
                   <option value="">-- Seleccionar --</option>
                   <option value="N-">Nombre Nombre A-Z</option>
-                  <option value="N+">Nombre Nombre Z-A</option>
+                  <option value="N+">Nombre Nombreq Z-A</option>
                   <option value="P-">Precio menor</option>
                   <option value="P+">Precio mayor</option>
           </select>
