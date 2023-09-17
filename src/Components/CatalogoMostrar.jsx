@@ -253,7 +253,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
                   onChange={ handleSeleccionOrdenar }>
                   <option value="">-- Seleccionar --</option>
                   <option value="N-">Nombre Nombre A-Z</option>
-                  <option value="N+">Nombre Nombreq Z-A</option>
+                  <option value="N+">Nombre Nombre Z-A</option>
                   <option value="P-">Precio menor</option>
                   <option value="P+">Precio mayor</option>
           </select>
