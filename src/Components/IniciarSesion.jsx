@@ -137,10 +137,9 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                                 <span className="visually-hidden">Loading...</span>
                             </div>
                         }
-                        {exito  && 
-                            <div>
+                        {exito  && <div>
                                 Bienvenido {nombre}
-                            </div>
+                                    </div>
                         }
                         {error  && 
                             <div>

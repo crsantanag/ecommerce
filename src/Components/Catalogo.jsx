@@ -12,7 +12,7 @@ export const Catalogo = () => {
   sessionStorage.setItem('paginaActual', paginaActual);
 
   const handleClick1 = () => {
-    navigate('/catalogomostrar/CD');
+    navigate('/catalogomostrar/CompactDisc');
   }
 
   const handleClick2 = () => {
@@ -32,7 +32,7 @@ export const Catalogo = () => {
         <h2>CD Musicales</h2>
         <img  className= "catalogo_producto" 
               src="/assets/images/producto1.jpg" 
-              alt="CD" 
+              alt="CompactDisc" 
               onClick={ handleClick1 } 
               style={{ cursor: 'pointer' }}/>
         <br/><br/><br/>

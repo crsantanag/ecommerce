@@ -16,7 +16,7 @@ export const HomePage = () => {
   const [cartState, setCartState] = useState (false)
   const [userCart, setUserCart] = useState (0)
 
-  // Defino funciones para actualizar el estado del inicio de sesión y del carro de compras
+  // Defino funciones para actualizar el estado del inicio de sesión
   const updateNameState = (nuevoEstado) => {
         setNameState(nuevoEstado);
   };
@@ -25,6 +25,7 @@ export const HomePage = () => {
         setUserName(nuevoValor);
   };
 
+    // Defino funciones para actualizar el estado del carro de compras
   const updateCartState = (nuevoEstado) => {
         setCartState (nuevoEstado)
   }
