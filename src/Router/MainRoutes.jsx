@@ -8,9 +8,8 @@ import { VerCarro } from '../Components/VerCarro'
 import { Contacto } from "../Components/Contacto";
 import { Ubicacion } from '../Components/Ubicacion'
 import { IniciarSesion } from "../Components/IniciarSesion";
-import { MiPerfil } from "../Components/MiPerfil";
 import { CrearCuenta } from "../Components/CrearCuenta"
-import { CerrarSesion } from "../Components/CerrarSesion";
+import { MiPerfil } from "../Components/MiPerfil";
 
 export const MainRoutes = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
@@ -74,26 +73,16 @@ export const MainRoutes = ({ nameState, updateNameState, userName, updateUserNam
                                                             userCart = {userCart}
                                                             updateUserCart = {updateUserCart}
                                                             />} />
-      <Route path='/miperfil' element= {<MiPerfil           nameState={nameState} 
-                                                            updateNameState={updateNameState}
-                                                            userName={userName} 
-                                                            updateUserName={updateUserName}
-                                                            cartState = {cartState}
-                                                            updateCartState = {updateCartState}
-                                                            userCart = {userCart}
-                                                            updateUserCart = {updateUserCart}
-                                                            />} />
-      <Route path='/cerrarsesion' element= {<CerrarSesion   nameState={nameState} 
-                                                            updateNameState={updateNameState}
-                                                            userName={userName} 
-                                                            updateUserName={updateUserName}
-                                                            cartState = {cartState}
-                                                            updateCartState = {updateCartState}
-                                                            userCart = {userCart}
-                                                            updateUserCart = {updateUserCart}
-                                                            />} />
-
       <Route path='/crearcuenta' element={<CrearCuenta      nameState={nameState} 
+                                                            updateNameState={updateNameState}
+                                                            userName={userName} 
+                                                            updateUserName={updateUserName}
+                                                            cartState = {cartState}
+                                                            updateCartState = {updateCartState}
+                                                            userCart = {userCart}
+                                                            updateUserCart = {updateUserCart}
+                                                            />} />
+      <Route path='/miperfil' element= {<MiPerfil           nameState={nameState} 
                                                             updateNameState={updateNameState}
                                                             userName={userName} 
                                                             updateUserName={updateUserName}

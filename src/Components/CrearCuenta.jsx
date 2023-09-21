@@ -12,7 +12,12 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
     apellido: '',
     rut:      '',
     email:    '',
-    password: ''
+    password: '',
+    direccion: '',
+    comuna: '',
+    ciudad: '',
+    region: '',
+    telefono: '',
   }
   
   const [createForm, setCreateForm] = useState (initialCreateForm)
@@ -42,6 +47,7 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
 
       updateNameState (true)
       updateUserName (createForm.nombre)
+      sessionStorage.setItem ('rut', createForm.rut)
 
       const regresar = sessionStorage.getItem ('rutaActual');
       navigate( regresar );
@@ -106,6 +112,7 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
                       onChange={handleCreateFormChange} />
             </div>
           </div>
+          
           <div className="row g-1">
           <div className="col-sm">
             <label  form="password" className="form-label">Password</label>
@@ -116,7 +123,6 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
                     value={createForm.password}
                     onChange={handleCreateFormChange} />
           </div>
-
           <div className="col-sm">
             <label form="password" className="form-label">Password (reingrese)</label>
             <input  type="password" 
@@ -126,26 +132,41 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
           </div>
           </div>
 
+          <div className="row g-1">
           <div className="mb-3">
             <label form="direccion" className="form-label">Dirección (calle y número)</label>
             <input  type="text" 
                     name="direccion"
                     className="form-control" 
-                    id="direccion" />
+                    id="direccion"
+                    value={createForm.direccion}
+                    onChange={handleCreateFormChange}  />
+          </div>
           </div>
 
           <div className="row g-1">
             <div className="col-sm">
               <label form="comuna" className="form-label">Comuna</label>
-              <input type="text" className="form-control" name="comuna" id="comuna"  />
+              <input type="text"  name="comuna" className="form-control" id="comuna" value={createForm.comuna}
+                      onChange={handleCreateFormChange}  />
             </div>
             <div className="col-sm">
               <label form="ciudad" className="form-label">Ciudad</label>
-              <input type="text" className="form-control" name="ciudad" id="ciudad"  />
+              <input type="text" name="ciudad" className="form-control" id="ciudad"  value={createForm.ciudad}
+                      onChange={handleCreateFormChange}   />
             </div>
+          </div>
+
+            <div className="row g-1">
             <div className="col-sm">
               <label form="region" className="form-label">Region</label>
-              <input type="text" className="form-control" name="region" id="region"  />
+              <input type="text" name="region" className="form-control" id="region"  value={createForm.region}
+                      onChange={handleCreateFormChange}  />
+            </div>
+            <div className="col-sm">
+              <label form="telefono" className="form-label">Teléfono</label>
+              <input type="text" name="telefono" className="form-control" id="telefono"  value={createForm.telefono}
+                      onChange={handleCreateFormChange}  />
             </div>
           </div>
 

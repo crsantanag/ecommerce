@@ -8,6 +8,9 @@ export const Catalogo = () => {
   const rutaActual = '/catalogo/'
   sessionStorage.setItem('rutaActual', rutaActual);
 
+  const paginaActual = 1
+  sessionStorage.setItem('paginaActual', paginaActual);
+
   const handleClick1 = () => {
     navigate('/catalogomostrar/CD');
   }

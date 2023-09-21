@@ -6,6 +6,10 @@ export const Portada = ({ nameState, updateNameState, userName, updateUserName, 
   const navigate = useNavigate();
 
   console.log ('PORTADA *** /// +++')
+
+  const rutaActual = '/'
+  sessionStorage.setItem('rutaActual', rutaActual);
+  
   const handleClick = () => {
     navigate('/catalogo');
   }
