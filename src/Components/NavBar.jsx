@@ -31,6 +31,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
     } 
 */}
 
+  // Hay un problema cuando elimino la busqueda (botón X)... se mantiene el SEARCH (p.e. SANTANA)
   const handleChange = (event) => {
     const nuevoValor = event.target.value;
     setBuscar(nuevoValor);
@@ -41,7 +42,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
   };
 
   const validaBuscar = () => {
-    // Hay un problema cuando elimino la busqueda (botón X)... se mantiene el SEARCH (p.e. SANTANA)
+
     if (buscar.length !== 0 ) {
       const paginaActual = 1
       sessionStorage.setItem('paginaActual', paginaActual);
