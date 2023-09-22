@@ -25,17 +25,16 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const pa = parseInt(sessionStorage.getItem('paginaActual'));
   const [paginaActual, setPaginaActual] = useState (pa)
 
+  const [estado, setEstado] = useState (false)
+
   var   productos = []
   var   productosFiltro = []
 
+  var paginas = []
+  var totalPaginas = 0
+  var totalProductos = 0
+
   const [productosDisplay, setProductosDisplay] = useState ([])
-
-  console.log ('Filtro : ', filtro, ', Productos : ',productos)
-
-
-
-  
-  console.log ('Filtro : ', filtro, ', ProductosFiltro : ',productosFiltro)
 
   switch (productosPorOrden) {
     case "N-":
@@ -55,31 +54,32 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       break;
       
     default:
+      console.log ('2. ... SORT', productosPorOrden)
       break;
   }
 
-  const totalProductos  = productosFiltro.length
+  totalProductos  = productosFiltro.length
   // return si no hay productos
+  alert (totalProductos)
 
-  const totalPaginas  = Math.ceil ( (totalProductos / productosPorPagina))
+  totalPaginas  = Math.ceil ( (totalProductos / productosPorPagina))
 
-  const paginas = []
+  paginas = []
     for (let  i = 0;
               i < totalPaginas;
               i++) { paginas.push((i * productosPorPagina) + 1) }
 
-  console.log ("*** catalogoMostrar: prductosFiltrados ", productosFiltro)
-  console.log ("*** catalogoMostrar: totalProductos    ", totalProductos)
-  console.log ("*** catalogoMostrar: totalPaginas      ", paginas)
+  console.log ("2. *** pasoIntermedio: prductosFiltrados ", productosFiltro)
+  console.log ("2. *** pasoIntermedio: totalProductos    ", totalProductos)
+  console.log ("2. *** pasoIntermedio: totalPaginas      ", paginas)
 
-  const leerProductos = async () => {
-    const urlProductos = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products/'
+    const leerProductos = async () => {
+    const urlProductos = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products'
+    console.log ("1. +++ leerProductos +++")
     
-    console.log ("+++ leerProductos +++")
-      try {
+    try {
         const traeProductos = await axios.get ( urlProductos )
-        console.log ('Leyó en Mostrar: ', traeProductos.data)
-        productos = ({...traeProductos.data})
+        productos = traeProductos.data
         productosFiltro = productos
         .filter ( (producto)  => ( producto.tipo == filtro || 
                                 producto.grupo.toUpperCase().includes(filtro.toUpperCase()) || 
@@ -94,9 +94,11 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
                                 url: producto.url,
                                 ventas: producto.ventas
   }))
+    setEstado (true)
+    console.log ('1. Pasó por Leerproductos: ', productosFiltro)
       }
       catch (error) {
-        console.log ('Salió por error', error)
+        console.log ('??? Salió por error', error)
       }
   }
 
@@ -105,19 +107,18 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   },[])
 
   const defineMostrar = () => {
-    
+
     const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
     setProductosPorPagina (pp)
-    console.log ("***** catalogoMostrar: productosPorPagina      ", pp) 
+    console.log ("3. ***** catalogoMostrar: productosPorPagina      ", pp) 
   
     const pa = parseInt(sessionStorage.getItem('paginaActual'));
     setPaginaActual (pa)
-    console.log ("***** catalogoMostrar: paginaActual      ", pa)
+    console.log ("3. ***** catalogoMostrar: paginaActual      ", pa)
 
     const sp = parseInt(sessionStorage.getItem('scrollPosition'))
     window.scrollTo(0, sp);
-    console.log ('>>> Scroll a ', typeof(sp), sp)
-    
+
     for (let  i = paginas[paginaActual-1];
               i <  Math.min (paginas[paginaActual-1]+productosPorPagina , totalProductos+1) ;
               i++) {
@@ -125,7 +126,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     }
 
     setProductosDisplay (productosMostrar)
-    console.log ("-- defineMostrar: productosMostrar ", productosMostrar)
+    console.log ("3. --- defineMostrar: productosMostrar ", productosMostrar)
   }
 
   useEffect ( ()=> {

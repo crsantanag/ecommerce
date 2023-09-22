@@ -1,3 +1,4 @@
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { HomePage }  from './Pages/HomePage.jsx'
@@ -21,9 +22,9 @@ import { HomePage }  from './Pages/HomePage.jsx'
   console.log ('MAIN *** /// +++')
   
 ReactDOM.createRoot(document.getElementById('root')).render(
-  // <React.StrictMode>
+  //<React.StrictMode>
     <BrowserRouter>
       <HomePage />
     </BrowserRouter>
-  // </React.StrictMode>,
+  //</React.StrictMode>,
 )

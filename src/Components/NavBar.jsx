@@ -42,10 +42,13 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
   };
 
   const validaBuscar = () => {
-
-    if (buscar.length !== 0 ) {
-      const paginaActual = 1
-      sessionStorage.setItem('paginaActual', paginaActual);
+    console.log ('Buscar : ', buscar.length)
+    const pa = 1
+    sessionStorage.setItem('paginaActual', pa);
+    if (buscar.length == 0 ) {
+      const queryString = `/catalogo`;
+      navigate( queryString );
+    } else {
       const queryString = `/catalogomostrar/${buscar}`;
       navigate( queryString );
     }

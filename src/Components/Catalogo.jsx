@@ -16,11 +16,11 @@ export const Catalogo = () => {
   }
 
   const handleClick2 = () => {
-    navigate('/catalogomostrar/AMP');
+    navigate('/catalogomostrar/Amplifier');
   }
 
   const handleClick3 = () => {
-    navigate('/catalogomostrar/PAR');
+    navigate('/catalogomostrar/Speaker');
   }
 
   return (
