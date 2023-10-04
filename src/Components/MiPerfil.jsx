@@ -1,6 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
+import { UserContext } from '../Context/userContext'
 import axios from 'axios'
+import jwtDecode from "jwt-decode"
 import './CrearCuenta.css'
 
 export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
@@ -22,20 +24,16 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
   
   const [updateForm, setUpdateForm] = useState (initialUpdateForm)
 
-  const data       = JSON.parse (localStorage.getItem ('Token'))
+  const data       = JSON.parse (localStorage.getItem ('token'))
   const rut        = sessionStorage.getItem ('rut')
   const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
   const leerUsuario = async () => {
     try {
-      const traeUsuario = await axios.get ( urlUsuario, {
-                                    headers:  {
-                                              authorization: data
-                                              }
-                                    }
-                      )
+      const traeUsuario = await axios.get ( urlUsuario, { headers:  { authorization: data } } )
       console.log ('Leyó : ', traeUsuario)
       const datosUsuario = traeUsuario.data[0]
+      console.log (datosUsuario)
       console.log ("miPerfil ***: ", datosUsuario)
       setUpdateForm ({...datosUsuario})
     }
@@ -43,6 +41,18 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
       console.log ('Salió por error', error)
     }
   }
+
+const [state, dispatch] = useContext (UserContext)
+console.log ("MIPERFIL - CONTEXT 1: ")
+const token = state.token
+console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  token )
+
+console.log ("USE_EFFECT de MIPERFIL")
+
+useEffect (() => {
+  leerUsuario ()
+},[])
+
 
   const handleupdateFormChange = (event) => {
     const keyForm   = event.target.name
@@ -57,20 +67,15 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
   const onSubmitUpdateForm = async (event) => {
     event.preventDefault();
 
-    const data       = JSON.parse (localStorage.getItem ('Token'))
+    const data       = JSON.parse (localStorage.getItem ('token'))
     const rut        = sessionStorage.getItem ('rut')
     const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
     try {
-      const actualizaUsuario = await axios.put ( urlUsuario, updateForm,  {
-        headers:  {
-                  authorization: data
-                  }
-        }
-      )
+      const actualizaUsuario = await axios.put ( urlUsuario, updateForm,  { headers:  { authorization: data } } )
       console.log (actualizaUsuario)
       updateUserName (updateForm.nombre)
-      sessionStorage.setItem ('rut', updateForm.rut)
+      sessionStorage.setItem ('rut-', updateForm.rut)
 
       const regresar = sessionStorage.getItem ('rutaActual');
       navigate( regresar );
@@ -81,12 +86,8 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
       console.log ('Mensaje : ', error.response.data.mesagge)
 
     }
+    dispatch ({ type:'LOGIN', payload: data})
   }
-
-  useEffect (() => {
-    leerUsuario ()
-  },[])
-
 
   return (
 

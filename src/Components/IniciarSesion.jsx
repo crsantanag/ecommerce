@@ -1,12 +1,14 @@
+import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react'
-import jwt_decode from "jwt-decode";
 import axios from 'axios'
+import jwt_decode from "jwt-decode";
+import { UserContext } from '../Context/userContext'
 import './IniciarSesion.css'
 
 export const IniciarSesion = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
     const navigate = useNavigate();
+    const [state, dispatch] = useContext (UserContext)
 
     const initialLoginForm = {
         email: '',
@@ -14,7 +16,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
     }
 
     const [loginForm, setLoginForm] = useState (initialLoginForm)
-    const [usuario, setUsuario] = useState ()
+
     const [exito, setExito] = useState (false)
     const [espera, setEspera] = useState (false)
     const [error, setError] = useState (false)
@@ -43,9 +45,9 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
 
             const tokenString = JSON.stringify (data)
             const  decoded = jwt_decode (tokenString);
-            setNombre (decoded.data.nombre)
+            setNombre (decoded.data.nombre+' '+decoded.data.apellido)
 
-            localStorage.setItem ('Token', tokenString)
+            localStorage.setItem ('token', tokenString)
 
             setEspera (false)
             setExito  (true)
@@ -53,23 +55,17 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
             updateNameState (true)
             updateUserName (decoded.data.nombre)
 
-            const rut       = decoded.data.rut
+            dispatch ({ type:'LOGIN', payload: data})
 
+            const rut = decoded.data.rut
             console.log ('rut :', typeof(rut), rut)
             sessionStorage.setItem ('rut', rut)
-            console.log (data)
-
+{/*
             const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
-
-            const traeUsuario = await axios.get ( urlUsuario, {
-                                                                headers: {
-                                                                        authorization: data
-                                                                        }
-                                                                }
-                                                )
-            setUsuario (traeUsuario.data)
-
-            console.log (traeUsuario.data)
+            const traeUsuario = await axios.get ( urlUsuario, { headers: { authorization: data } } )
+            const datosUsuario = traeUsuario.data[0]
+            sessionStorage.setItem ('datosUsuario', datosUsuario)
+            console.log (traeUsuario.data[0]) */}
         }
         catch {
             setEspera (false)
@@ -134,7 +130,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                     <div className="modal-body">
                         {espera     &&  
                             <div className="spinner-border" role="status">
-                                <span className="visually-hidden">Loading...</span>
+                                <span className="visually-hidden"></span>
                             </div>
                         }
                         {exito  && <div>
@@ -152,7 +148,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                                 className="btn btn-secondary" 
                                 data-bs-dismiss="modal"
                                 onClick= { validarClose } >
-                                Close</button>
+                                Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -161,8 +157,6 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
         </div>
         </div>
         <br/>
-
-    {/*    { JSON.stringify (usuarios)}  */}
 
     </div>
     )

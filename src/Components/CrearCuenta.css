@@ -11,5 +11,13 @@
     width: 800px;
     border: solid black;
     border-radius: 2%;
+}
 
+.contenedor_600 {
+    background-color: rgb(230, 230, 230);
+    margin-left: 40px;
+    margin-right: 40px;
+    width: 600px;
+    border: solid black;
+    border-radius: 2%;
 }

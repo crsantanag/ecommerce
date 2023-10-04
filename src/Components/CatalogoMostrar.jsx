@@ -1,19 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import axios from 'axios'
+import { useEffect, useState, useContext } from 'react';
+import { ProductContext } from '../Context/productContext';
 import './Catalogo.css'
+import axios from 'axios';
 
 export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
-  console.log ('CATALOGOMOSTRAR *** /// +++')
+  console.log ('CATALOGO MOSTRAR *** /// +++')
 
   const navigate   = useNavigate();
   const  { filtro }  = useParams();
 
-  console.log ('CATALOGOMOSTRAR *** /// +++ ', filtro)
-
   const rutaActual = '/catalogomostrar/' + filtro
   sessionStorage.setItem('rutaActual', rutaActual);
+
+  const rutaCatalogo = '/catalogomostrar/' + filtro
+  sessionStorage.setItem('rutaCatalogo', rutaCatalogo);
 
   const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
   const [productosPorPagina, setProductosPorPagina] = useState (pp)
@@ -30,72 +32,112 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const [totalProductos, setTotalProductos] = useState (0)
   const [paginas, setPaginas] = useState ([])
 
+  const [state, dispatch] = useContext (ProductContext)
+  console.log ("CATALOGO MOSTRAR - CONTEXT 1: ",  state.product )
+  const [productos, setProductos] = useState([])
 
-  const leerProductos = async () => {
-    const urlProductos = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products'
-    console.log ('CATALOGOLEER *** /// +++ ', filtro)
-    try {
-        const traeProductos = await axios.get ( urlProductos )
+  const getAllProducts = async () => {
+    const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
+    dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
+    setProductos(data)
+    console.log ("Data : ", data)
+  }
 
-        const productosFiltroAux = traeProductos.data
-        .filter ( (producto)  => ( producto.tipo == filtro || 
-                              producto.grupo.toUpperCase().includes(filtro.toUpperCase()) || 
-                              producto.nombre.toUpperCase().includes(filtro.toUpperCase()) 
-                              ) )
-        .map (( producto)     => ({
-                              codigo: producto.codigo,
-                              grupo: producto.grupo,
-                              nombre: producto.nombre,
-                              precio: producto.precio,
-                              stock: producto.stock,
-                              url: producto.url,
-                              ventas: producto.ventas
-          }))
+  console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  productos )
 
-          productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
-          setProductosFiltro (productosFiltroAux)
+  const filtrarProductos = () => {
+    console.log ('CATALOGO FILTRAR 1 ', productos)
+    const productosFiltroAux = productos
+      .filter ( (producto)  => ( producto.tipo == filtro || 
+                            producto.grupo.toUpperCase().includes(filtro.toUpperCase()) || 
+                            producto.nombre.toUpperCase().includes(filtro.toUpperCase()) 
+                            ) )
+      .map (( producto)     => ({
+                            codigo: producto.codigo,
+                            grupo: producto.grupo,
+                            nombre: producto.nombre,
+                            precio: producto.precio,
+                            stock: producto.stock,
+                            url: producto.url,
+                            ventas: producto.ventas
+      }))
 
-          const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
-          setProductosPorPagina (pp)
-          const pa = parseInt(sessionStorage.getItem('paginaActual'));
-          setPaginaActual (pa)
-
-          window.scrollTo(0, 0);
+      productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
       
-          const tt = productosFiltroAux.length
-          setTotalProductos (tt)
-          // return si no hay productos
-          const tp = Math.ceil ( (tt / pp))
-          setTotalPaginas (tp)
 
-          const paginasAux = []
-          for (let  i = 0;
-                    i < tp;
-                    i++) { paginasAux.push((i * pp) + 1) }
-          setPaginas (paginasAux)
+      console.log ('CATALOGO FILTRAR 2 ', productosFiltroAux)
+      const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
+      setProductosPorPagina (pp)
+      const po = sessionStorage.getItem('productosPorOrden')
+      setProductosPorOrden(po)
+
+      switch (po) {
+        case "N-":
+          productosFiltroAux.sort((a, b) => a.nombre.localeCompare(b.nombre));
+          break;
+        case "N+":
+          productosFiltroAux.sort((a, b) => b.nombre.localeCompare(a.nombre));
+          break;
+        case "P-":
+          productosFiltroAux.sort((a, b) => a.precio - (b.precio));
+          break;
+        case "P+":
+          productosFiltroAux.sort((a, b) => b.precio - (a.precio));
+          break;
+        default:
+          productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
+          break;
+      }
+
+      setProductosFiltro (productosFiltroAux)
+
+      const pa = parseInt(sessionStorage.getItem('paginaActual'));
+      setPaginaActual (pa)
+
+      window.scrollTo(0, 0);
+      
+      const tt = productosFiltroAux.length
+      setTotalProductos (tt)
+      // return si no hay productos
+      const tp = Math.ceil ( (tt / pp))
+      setTotalPaginas (tp)
+
+      const paginasAux = []
+      for (let  i = 0;
+                i < tp;
+                i++) { paginasAux.push((i * pp) + 1) }
+      setPaginas (paginasAux)
           
-          const productosMostrar = []
-          for (let  i = paginasAux[pa-1];
-                    i <  Math.min (paginasAux[pa-1]+pp , tt+1) ;
-                    i++) { productosMostrar.push(productosFiltroAux[i-1]); }
-          setProductosDisplay (productosMostrar)
-      }
-      catch (error) {
-        console.log ('ERROR: CatálogoMostrar ==> ', error)
-      }
+      const productosMostrar = []
+      for (let  i = paginasAux[pa-1];
+                i <  Math.min (paginasAux[pa-1]+pp , tt+1) ;
+                i++) { productosMostrar.push(productosFiltroAux[i-1]); }
+      setProductosDisplay (productosMostrar)
+      console.log ('CATALOGO FILTRAR 3 ', productosMostrar)
   }
 
   useEffect (() => {
-    leerProductos()
-  },[filtro])
+    if (state.product.length === 0) {
+      console.log ('No hay productos, haciendo fetch')
+      getAllProducts()
+    }
+    else {
+      console.log ('Hay productos, haciendo set')
+      console.log ("STATE: ", state.product)
+      setProductos (state.product)
+    }
+    filtrarProductos()
+    },[filtro, state, productos])
 
   const defineMostrar = () => {
+    console.log ('DEFINE MOSTRAR &&&&&&&&&&&&&&&&&&&&&&&&')
     const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
     setProductosPorPagina (pp)
     const pa = parseInt(sessionStorage.getItem('paginaActual'));
     setPaginaActual (pa)
     const sp = parseInt(sessionStorage.getItem('scrollPosition'))
-    window.scrollTo(0, sp);
+    //window.scrollTo(0, sp);
+    window.scrollTo(0, 0);
 
     const tt = totalProductos
     const tp = Math.ceil ( (tt / pp))
@@ -112,13 +154,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
               i <  Math.min (paginasAux[pa-1]+pp , tt+1) ;
               i++) { productosMostrar.push(productosFiltro[i-1]); }
     setProductosDisplay (productosMostrar)
+    console.log ('DEFINE MOSTRAR &&&&&&&&&&&&&&&&&&&&&&&& ', productosMostrar)
   }
-
-  useEffect ( ()=> {
-    defineMostrar();
-    },
-    [filtro, paginaActual, productosPorPagina, productosPorOrden]
-  )
 
   const flechaIzquierda = () => {
     if (paginaActual == 1) return
@@ -136,6 +173,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       productosMostrar.push(productosFiltro[i-1]);
     }
     setProductosDisplay (productosMostrar)
+    window.scrollTo(0, 0);
   }
 
   const flechaDerecha = () => {
@@ -155,6 +193,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       productosMostrar.push(productosFiltro[i-1])
     }
     setProductosDisplay (productosMostrar)
+    window.scrollTo(0, 0);
   }
 
   const handleSeleccionPagina = (event) => {
@@ -167,6 +206,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     const tt = totalProductos
     const tp = Math.ceil ( (tt / pp))
     setTotalPaginas (tp)
+    defineMostrar()
   }
 
   const handleSeleccionOrdenar = (event) => {
@@ -194,6 +234,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
         productosFiltro.sort((a, b) => a.codigo - (b.codigo))
         break;
     }
+    defineMostrar()
   }
 
   const handleProductCD = (event, index, stock) => {

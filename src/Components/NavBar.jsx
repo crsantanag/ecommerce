@@ -1,35 +1,21 @@
 import { NavLink } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { UserContext } from '../Context/userContext'
 
 export const NavBar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
   const navigate = useNavigate();
   const [buscar, setBuscar] = useState ('')
+  const [state, dispatch] = useContext (UserContext)
+
+  const location = useLocation()
+  const rutaActual = location.pathname;
 
   const scrollPosition = window.scrollY;
   sessionStorage.setItem('scrollPosition', scrollPosition.toString());
 
-  console.log ('NAVBAR *** /// +++')
-{/*
-  let totalArticulos = 0
-  if (sessionStorage.getItem('carroCompras') !== null) 
-    {
-      const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'));
-      for (let i = 0; i < carroCompras.length; i++) {
-          totalArticulos += carroCompras[i].cantidad;
-      }
-      // updateUserCart (totalArticulos)
-      if (totalArticulos == 0) 
-      {
-        //updateCartState (false)
-      }
-      else 
-      {
-        //updateCartState (true)
-      }
-    } 
-*/}
+  console.log ('NAVBAR *** /// +++', rutaActual)
 
   // Hay un problema cuando elimino la busqueda (botón X)... se mantiene el SEARCH (p.e. SANTANA)
   const handleChange = (event) => {
@@ -56,6 +42,8 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
 
   const iniciarSesion = (event) => {
     event.preventDefault();
+
+
     const queryString = `/iniciarsesion/`;
     navigate( queryString );
   }
@@ -77,19 +65,15 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
   const cerrarSesion = (event) => {
     event.preventDefault();
 
-    const rut = ''
-    sessionStorage.setItem ('rut', rut)
+    sessionStorage.removeItem ('rut')
+    localStorage.removeItem ('token')
+    dispatch({ type: 'LOGOUT'}) // No necesita enviar carga (no necesita el payload)
     updateNameState (false)
-
-    const regresar = sessionStorage.getItem ('rutaActual');
-    navigate( regresar );
-
   }
 
   const verCarro = (event) => {
     event.preventDefault();
     navigate(`/vercarro/`);
-
   }
 
   return (
@@ -164,11 +148,11 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
                             style={{width: "200px", textAlign: "center",   display: "inline-block"}}
                             data-bs-toggle="dropdown" 
                             aria-expanded="false">
-                            Iniciar sesión
+                            Mi cuenta
                     </button>
                       <ul className="dropdown-menu dropdown-menu-dark" style={{width: "200px"}}>
-                        <li><a className="dropdown-item bg-dark" href="#" onClick = { iniciarSesion }>Ingresar</a></li>
-                        <li><a className="dropdown-item bg-dark" href="#" onClick = { crearCuenta }>  Crear cuenta</a></li>
+                        <li><a className="dropdown-item bg-dark" href="#" onClick = { iniciarSesion }>Iniciar sesión</a></li>
+                        <li><a className="dropdown-item bg-dark" href="#" onClick = { crearCuenta }>Crear cuenta</a></li>
                       </ul> 
                   </li>
                 </ul>
@@ -202,7 +186,8 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
                       style={{width: "200px", textAlign: "center",   display: "inline-block"}}
                       type="submit"
                       onClick = { verCarro }>
-                      Carro de compras
+                      <img src="/assets/images/carrocompras.png" style={{width: "20px", height:"20px"}}/>
+                      &nbsp;&nbsp;Carro de compras
               </button>
               }
               { cartState &&

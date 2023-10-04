@@ -8,6 +8,9 @@ export const Catalogo = () => {
   const rutaActual = '/catalogo/'
   sessionStorage.setItem('rutaActual', rutaActual);
 
+  const rutaCatalogo = '/catalogo/'
+  sessionStorage.setItem('rutaCatalogo', rutaCatalogo);
+
   const paginaActual = 1
   sessionStorage.setItem('paginaActual', paginaActual);
 
