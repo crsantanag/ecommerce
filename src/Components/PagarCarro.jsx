@@ -9,6 +9,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const navigate = useNavigate();
 
+    
+    const rutaActual   = '/pagarcarro'
+    sessionStorage.setItem ('rutaActual', rutaActual)
+
     var pagarPaypal = 0
 
     const [state,] = useContext (ProductContext)
