@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../Context/userContext'
 import axios from 'axios'
 import jwtDecode from "jwt-decode"
-import './CrearCuenta.css'
+import './MiPerfil.css'
 
 export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
@@ -91,7 +91,7 @@ useEffect (() => {
 
   return (
 
-  <div className="iniciar_sesion">
+  <div className="mi_perfil">
     <br />
     <div className="contenedor_800">
     <div className="container-md">
@@ -162,7 +162,7 @@ useEffect (() => {
           </div>
           </div>
 */}
-          <div className="row g-1">
+
           <div className="mb-3">
             <label form="direccion" className="form-label">Dirección (calle y número)</label>
             <input  type="text" 
@@ -172,7 +172,7 @@ useEffect (() => {
                     value={updateForm.direccion}
                     onChange={handleupdateFormChange}  />
           </div>
-          </div>
+
 
           <div className="row g-1">
             <div className="col-sm">

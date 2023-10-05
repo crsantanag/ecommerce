@@ -1,19 +1,18 @@
-.iniciar_sesion {
+.mi_perfil {
     background-color: rgb(230, 230, 230);
-    text-align: left;
+    text-align: left
 }
-
-.contenedor_500 {
+.contenedor_800 {
     background-color: rgb(230, 230, 230);
     margin-left: 80px;
-    max-width: 500px;
+    margin-right: 80px;
+    max-width: 800px;
     border: solid black;
     border-radius: 2%;
-
 }
 
 @media (max-width: 768px) {
-    .contenedor_500 {
+    .contenedor_800 {
         margin-left: 10px; 
         margin-right: 10px
     }

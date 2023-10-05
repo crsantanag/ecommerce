@@ -2,11 +2,18 @@
     background-color: rgb(230, 230, 230)
 }
 
-.contenedor_600 {
+.contenedor_650 {
     background-color: rgb(230, 230, 230);
-    margin-left: 40px;
+    margin-left: 100px;
     margin-right: 40px;
     max-width: 600px;
     border: solid black;
     border-radius: 2%;
+}
+
+@media (max-width: 768px) {
+    .contenedor_650 {
+        margin-left: 10px; 
+        margin-right: 10px
+    }
 }

@@ -9,9 +9,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const navigate = useNavigate();
 
-//    const rutaActual   = '/pagarcarro'
-//    sessionStorage.setItem ('rutaActual', rutaActual)
-
     const [pagarPaypal, setPagarPaypal] = useState (0)
 
     const [state,] = useContext (ProductContext)
@@ -22,7 +19,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [totalPesos, setTotalPesos] = useState (0)
     const [gastosDeEnvio, setGastosDeEnvio] = useState (0)
     const [totalTotal, setTotalTotal] = useState (0)
-    const [newTotalValue, setNewTotalValue] = useState (0)
 
     const [estado, setEstado] = useState (false)
     const [enviaADomicilio, setenviaADomicilio] = useState (false)
@@ -66,18 +62,15 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     },[])
 
     const calculaValores = () => {
-        console.log ('0', newTotalValue)
         let suma = 0
         const carroCompras = JSON.parse(localStorage.getItem('carroCompras'));
-        console.log ("Carro : ", carroCompras)
+
         for (let i = 0; i < carroCompras.length; i++) {
             const codigo   = parseInt(carroCompras[i].codigo)
             const cantidad = parseInt(carroCompras[i].cantidad)
             const precio   = productos[codigo-1].precio
             const subTotal = cantidad * precio
             suma = suma + subTotal
-            // setTotalPesos (contador => contador + subTotal)
-            console.log ("Acumulado : ", suma)
         }
         
         setTotalPesos (suma)
@@ -103,18 +96,13 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         const totalValueAux = (grandTotal / 900)
         const totalValueRnd = parseFloat(totalValueAux.toFixed(2))
         setPagarPaypal (totalValueRnd)
-
-        console.log ('1', totalValueRnd)
-        setNewTotalValue (totalValueRnd)
-        console.log ('2', pagarPaypal)
-        console.log ("newTotalValue *"+ newTotalValue + "*")
     }
 
     useEffect (() => {
         calculaValores ()
     },[updateForm])
 
-        
+
     const handleupdateFormChange = (event) => {
         const keyForm   = event.target.name
         const valueForm = event.target.value
@@ -124,17 +112,20 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                         })
     }
 
+
     const envioDomicilio = async (event) => {
         event.preventDefault()
         setenviaADomicilio (true)
         setRetiraEnTienda (false)
     }
 
+
     const retiraTienda = async (event) => {
         event.preventDefault()
         setRetiraEnTienda (true)
         setenviaADomicilio (false)
     }
+
 
     const irAPagar = async (event) => {
         event.preventDefault()
@@ -148,6 +139,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
  
     }
 
+
     const regresar = async (event) => {
         event.preventDefault()
         const rutaCatalogo = sessionStorage.getItem ('rutaActual')
@@ -155,51 +147,52 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     }
 
 return (
-    <div className="pagar_carro" style={{display: "flex", alignItems: "center", justifyContent: "center", marginTop: "20px" }}>
+    <div className="pagar_carro">
+    <br/>
     <div className="row">
     <br/> <br/>
-    <div className="contenedor_600">
-    <br/>
-    <div className="container">
-    <h4>Información de envío</h4>
-    <h5>¿ Cómo quieres recibir tu pedido ?</h5> <br/>
-    <div style={{display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div className="row">
-            <div className="col col-auto" >
-                {!enviaADomicilio && <button type="button" className="btn btn-outline-primary" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
-                { enviaADomicilio && <button type="button" className="btn bg-primary text-white" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
-                {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary" style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
-                { retiraEnTienda  && <button type="button" className="btn bg-primary text-white" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
+    <div className="contenedor_650">
+        <div className='container'>
+        <br/>
+        <h4>Información de envío</h4>
+        <h5>¿ Cómo quieres recibir tu pedido ?</h5> <br/>
+        <div style={{display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div className="row">
+                <div className="col col-auto" >
+                    {!enviaADomicilio && <button type="button" className="btn btn-outline-primary" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
+                    { enviaADomicilio && <button type="button" className="btn bg-primary text-white" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
+                    {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary" style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
+                    { retiraEnTienda  && <button type="button" className="btn bg-primary text-white" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
+                </div>
+                <br/><br/><br/>
             </div>
-            <br/> <br/><br/>
-        </div>
-    </div>
-
-    <form>
-        <div className="row g-1">
-        <div className="col-sm">
-            <label  form="nombre" className="form-label">Nombre</label>
-            <input  type="text"
-                    name="nombre"
-                    className="form-control" 
-                    id="nombre"  
-                    aria-label="nombre"
-                    value={updateForm.nombre}
-                    onChange={handleupdateFormChange} />
-        </div>
-        <div className="col-sm">
-            <label  form="apellido" className="form-label">Apellido</label>
-            <input  type="text" 
-                    name="apellido"
-                    className="form-control" 
-                    id="apellido"  
-                    aria-label="apellido"
-                    value={updateForm.apellido}
-                    onChange={handleupdateFormChange} />
         </div>
 
+        <form>
+            <div className="row g-1">
+                <div className="col-sm">
+                    <label  form="nombre" className="form-label">Nombre</label>
+                    <input  type="text"
+                        name="nombre"
+                        className="form-control" 
+                        id="nombre"  
+                        aria-label="nombre"
+                        value={updateForm.nombre}
+                            onChange={handleupdateFormChange} />
+                </div>
+                <div className="col-sm">
+                    <label  form="apellido" className="form-label">Apellido</label>
+                    <input  type="text" 
+                            name="apellido"
+                            className="form-control" 
+                            id="apellido"  
+                            aria-label="apellido"
+                            value={updateForm.apellido}
+                            onChange={handleupdateFormChange} />
+                </div>
+
         <div className="row g-1">
-        <div className="mb-3">
+
             <label form="direccion" className="form-label">Dirección (calle y número)</label>
             <input  type="text" 
                     name="direccion"
@@ -207,7 +200,7 @@ return (
                     id="direccion"
                     value={updateForm.direccion}
                     onChange={handleupdateFormChange}  />
-        </div>
+        
         </div>
 
         <div className="row g-1">
@@ -257,8 +250,9 @@ return (
     <br/>
     </div>
     </div>
+    
     <br/><br/>
-    <div className="contenedor_600">
+    <div className="contenedor_650">
     <br/>
     <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center"}}>
         <br/>
@@ -294,6 +288,7 @@ return (
     { estado && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
     </div>
     </div>
+    <br/>
     </div>
 )
 }
