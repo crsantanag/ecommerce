@@ -1,3 +1,12 @@
 .pagar_carro {
     background-color: rgb(230, 230, 230)
 }
+
+.contenedor_600 {
+    background-color: rgb(230, 230, 230);
+    margin-left: 40px;
+    margin-right: 40px;
+    max-width: 600px;
+    border: solid black;
+    border-radius: 2%;
+}

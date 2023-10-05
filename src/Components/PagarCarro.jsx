@@ -12,7 +12,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 //    const rutaActual   = '/pagarcarro'
 //    sessionStorage.setItem ('rutaActual', rutaActual)
 
-    var pagarPaypal = 0
+    const [pagarPaypal, setPagarPaypal] = useState (0)
 
     const [state,] = useContext (ProductContext)
     const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
@@ -102,7 +102,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
         const totalValueAux = (grandTotal / 900)
         const totalValueRnd = parseFloat(totalValueAux.toFixed(2))
-        pagarPaypal = totalValueRnd
+        setPagarPaypal (totalValueRnd)
 
         console.log ('1', totalValueRnd)
         setNewTotalValue (totalValueRnd)
@@ -160,12 +160,12 @@ return (
     <br/> <br/>
     <div className="contenedor_600">
     <br/>
-    <div className="container-md">
+    <div className="container">
     <h4>Información de envío</h4>
     <h5>¿ Cómo quieres recibir tu pedido ?</h5> <br/>
     <div style={{display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="row">
-            <div className="col col-md-auto" >
+            <div className="col col-auto" >
                 {!enviaADomicilio && <button type="button" className="btn btn-outline-primary" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
                 { enviaADomicilio && <button type="button" className="btn bg-primary text-white" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
                 {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary" style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
@@ -249,7 +249,7 @@ return (
         <div className="row">
             <div className="col col-md-auto" >
                 <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { regresar }><strong>Regresar sin comprar</strong></button>
-                <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }><strong>Ir a pagar</strong></button>
+                <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }><strong>Pagar</strong></button>
             </div>
             <br/>
         </div>
@@ -291,7 +291,7 @@ return (
         <br/>
     </div>
     <br/>
-    { estado && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {28.99} /> }
+    { estado && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
     </div>
     </div>
     </div>

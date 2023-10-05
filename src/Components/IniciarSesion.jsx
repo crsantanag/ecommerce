@@ -86,7 +86,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
     <div className="iniciar_sesion">
         <br />
         <div className="contenedor_500">
-        <div className="container-md">
+        <div className="container">
         <br/>
         <h2>Ingrese su eMail y password</h2>
         <br/>
