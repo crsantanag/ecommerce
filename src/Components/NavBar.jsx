@@ -65,7 +65,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
   const cerrarSesion = (event) => {
     event.preventDefault();
 
-    sessionStorage.removeItem ('rut')
+    localStorage.removeItem ('rut')
     localStorage.removeItem ('token')
     dispatch({ type: 'LOGOUT'}) // No necesita enviar carga (no necesita el payload)
     updateNameState (false)
@@ -169,6 +169,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
                             Bienvenido { userName }
                     </button>
                       <ul className="dropdown-menu bg-primary " style={{width: "200px"}}>
+                        
                         <li><a className="dropdown-item bg-primary text-white" href="#" onClick = { miPerfil }>Mi perfil</a></li>
                         <li><a className="dropdown-item bg-primary text-white" href="#" onClick = { cerrarSesion }> Cerrar sesión</a></li>
                       </ul> 

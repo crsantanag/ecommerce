@@ -25,7 +25,7 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
   const [updateForm, setUpdateForm] = useState (initialUpdateForm)
 
   const data       = JSON.parse (localStorage.getItem ('token'))
-  const rut        = sessionStorage.getItem ('rut')
+  const rut        = localStorage.getItem ('rut')
   const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
   const leerUsuario = async () => {
@@ -68,7 +68,7 @@ useEffect (() => {
     event.preventDefault();
 
     const data       = JSON.parse (localStorage.getItem ('token'))
-    const rut        = sessionStorage.getItem ('rut')
+    const rut        = localStorage.getItem ('rut')
     const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
     try {

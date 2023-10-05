@@ -19,10 +19,9 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
   const [cantidad, setCantidad] = useState(1)
 
   const leerTrackList = async () => {
-
-    if (sessionStorage.getItem('carroCompras') !== null) 
+    if (localStorage.getItem('carroCompras') !== null) 
       {
-      const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'))
+      const carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
       const buscaIndex   = carroCompras.findIndex (objeto => objeto.codigo == itemNum)
       if (buscaIndex !== -1) 
         {
@@ -50,30 +49,38 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
     }
   }
 
+
+  useEffect (() => {
+    leerTrackList ()
+  },[])
+
+
   const restaUno = () => {
     if (cantidad == 1) return;
     setCantidad (contador => contador - 1)
   }
+
 
   const sumarUno = () => {
     if (cantidad == productos[index].stock ) return;
     setCantidad (contador => contador + 1)
   }
 
+
   const actualizarCarro = (event, codigo) => {
     event.preventDefault()
     console.log ("Codigo es : ", codigo)
 
-    if (sessionStorage.getItem('carroCompras') == null) 
+    if (localStorage.getItem('carroCompras') == null) 
     {
       console.log ("No existe carro de compras, se crea")
       const carroCompras = [{codigo, cantidad}];
-      sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+      localStorage.setItem('carroCompras', JSON.stringify(carroCompras));
       updateUserCart (cantidad)
     } 
     else 
     {
-      const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'))
+      const carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
       console.log ("Existe carro de compras, se trae ", carroCompras)
       const buscaIndex = carroCompras.findIndex (objeto => objeto.codigo == codigo)
       if (buscaIndex !== -1) 
@@ -88,7 +95,7 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
         carroCompras.push ({codigo, cantidad})
         console.log ('No existe codigo, se crea ', carroCompras)
       }
-      sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras))
+      localStorage.setItem('carroCompras', JSON.stringify(carroCompras))
       const totalArticulos = carroCompras.reduce((total, objeto) => total + objeto.cantidad, 0);
       updateUserCart  (totalArticulos)
     } 
@@ -96,17 +103,13 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
     updateCartState (true)
     const rutaCatalogo = sessionStorage.getItem ('rutaCatalogo')
     navigate (rutaCatalogo);
-
   }
+
 
   const verCarro = () => {
     navigate(`/vercarro/`);
-    
   }
 
-  useEffect (() => {
-    leerTrackList ()
-  },[])
 
   return (
     <div className="compraCD">

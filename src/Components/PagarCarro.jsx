@@ -9,9 +9,8 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const navigate = useNavigate();
 
-    
-    const rutaActual   = '/pagarcarro'
-    sessionStorage.setItem ('rutaActual', rutaActual)
+//    const rutaActual   = '/pagarcarro'
+//    sessionStorage.setItem ('rutaActual', rutaActual)
 
     var pagarPaypal = 0
 
@@ -24,6 +23,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [gastosDeEnvio, setGastosDeEnvio] = useState (0)
     const [totalTotal, setTotalTotal] = useState (0)
     const [newTotalValue, setNewTotalValue] = useState (0)
+
+    const [estado, setEstado] = useState (false)
+    const [enviaADomicilio, setenviaADomicilio] = useState (false)
+    const [retiraEnTienda,  setRetiraEnTienda]  = useState (false)
 
     const initialUpdateForm = {
         nombre:   '',
@@ -40,10 +43,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [updateForm, setUpdateForm] = useState (initialUpdateForm)
 
     const leerUsuario = async () => {
-        // Si rut no existe en la sessionStorage entonces sale!
-        if (sessionStorage.getItem('rut') !== null) {
+        // Si rut no existe en la localStorage entonces sale!
+        if (localStorage.getItem('rut') !== null) {
+            const rut        = localStorage.getItem ('rut')
             const data       = JSON.parse (localStorage.getItem ('token'))
-            const rut        = sessionStorage.getItem ('rut')
             const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
             try 
             {
@@ -55,8 +58,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
             {
                 console.log ('Salió por error', error)
             }   
-        } else {
-            alert ('Debe ingresar datos')
         }
     }
 
@@ -67,7 +68,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const calculaValores = () => {
         console.log ('0', newTotalValue)
         let suma = 0
-        const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'));
+        const carroCompras = JSON.parse(localStorage.getItem('carroCompras'));
         console.log ("Carro : ", carroCompras)
         for (let i = 0; i < carroCompras.length; i++) {
             const codigo   = parseInt(carroCompras[i].codigo)
@@ -123,12 +124,34 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                         })
     }
 
-    const onSubmitUpdateForm = async (event) => {
-        event.preventDefault();
+    const envioDomicilio = async (event) => {
+        event.preventDefault()
+        setenviaADomicilio (true)
+        setRetiraEnTienda (false)
+    }
 
-            // guardar direccion de destino
-            const regresar = sessionStorage.getItem ('rutaActual');
-            navigate( regresar );
+    const retiraTienda = async (event) => {
+        event.preventDefault()
+        setRetiraEnTienda (true)
+        setenviaADomicilio (false)
+    }
+
+    const irAPagar = async (event) => {
+        event.preventDefault()
+        // Debe revisar que todos los campos están OK
+        // Debe revisar que esté seleccionado uno de: "envio a domicilio" o "retira en tienda"
+        if (enviaADomicilio || retiraEnTienda) {
+            setEstado (true)
+        } else {
+            alert ('Debe seleccionar una opcion: envio o retiro')
+        }
+ 
+    }
+
+    const regresar = async (event) => {
+        event.preventDefault()
+        const rutaCatalogo = sessionStorage.getItem ('rutaActual')
+        navigate (rutaCatalogo);
     }
 
 return (
@@ -136,19 +159,20 @@ return (
     <div className="row">
     <br/> <br/>
     <div className="contenedor_600">
-    <br/> <br/>
+    <br/>
     <div className="container-md">
     <h4>Información de envío</h4>
     <h5>¿ Cómo quieres recibir tu pedido ?</h5> <br/>
     <div style={{display: "flex", alignItems: "center", justifyContent: "center" }}>
-    <div className="row">
-        <div className="col col-md-auto" >
-            <button type="button" className="btn btn-outline-primary" style={{width: "250px"}}>Envío a domicilio</button>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button type="button" className="btn btn-outline-primary " style={{width: "250px"}}>Retiro en tienda</button>
+        <div className="row">
+            <div className="col col-md-auto" >
+                {!enviaADomicilio && <button type="button" className="btn btn-outline-primary" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
+                { enviaADomicilio && <button type="button" className="btn bg-primary text-white" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
+                {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary" style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
+                { retiraEnTienda  && <button type="button" className="btn bg-primary text-white" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
+            </div>
+            <br/> <br/><br/>
         </div>
-        <br/> <br/><br/>
-    </div>
     </div>
 
     <form>
@@ -223,7 +247,11 @@ return (
         </div>
         </div>
         <div className="row">
-        <button type="submit" className="btn btn-primary" onClick= { onSubmitUpdateForm } >Volver a la página anterior</button>
+            <div className="col col-md-auto" >
+                <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { regresar }><strong>Regresar sin comprar</strong></button>
+                <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }><strong>Ir a pagar</strong></button>
+            </div>
+            <br/>
         </div>
     </form>
     <br/>
@@ -232,16 +260,16 @@ return (
     <br/><br/>
     <div className="contenedor_600">
     <br/>
-    <div className="bs-warning-rgb" style={{ border: "solid green",  borderRadius: "2%", backgroundColor: "green", color: "white", textAlign: "center"}}>
+    <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center"}}>
         <br/>
-        <h4>Todos sus productos están en stock</h4>
+        <h4>Sus  productos  están  reservados</h4>
+        <h5>(tiene 15 minutos para realizar el pago de éstos,</h5>
+        <h5>pasado ese tiempo los productos serán liberados)</h5>
         <br/>
     </div>
     <br/>
     <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black", textAlign: "center"}}>
         <div className="container text-center">
-            <br/>
-            <h4>Detalle de la compra:</h4>
             <br/>
             <div className="row">
                 <div className="col col-md-auto" style={{textAlign: "right", width: "300px"}}>
@@ -261,10 +289,9 @@ return (
             </div>
         </div>
         <br/>
-        <br/>
     </div>
     <br/>
-    <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {28.99} />
+    { estado && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {28.99} /> }
     </div>
     </div>
     </div>

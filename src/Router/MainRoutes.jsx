@@ -11,6 +11,7 @@ import { IniciarSesion } from "../Components/IniciarSesion";
 import { CrearCuenta } from "../Components/CrearCuenta"
 import { MiPerfil } from "../Components/MiPerfil";
 import { PagarCarro } from "../Components/PagarCarro";
+import { Exito } from "../Components/Exito"
 
 export const MainRoutes = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
@@ -75,6 +76,16 @@ export const MainRoutes = ({ nameState, updateNameState, userName, updateUserNam
                                                             userCart = {userCart}
                                                             updateUserCart = {updateUserCart}
                                                             />} />
+
+      <Route path='/exito' element={<Exito                  nameState={nameState} 
+                                                            updateNameState={updateNameState}
+                                                            userName={userName} 
+                                                            updateUserName={updateUserName}
+                                                            cartState = {cartState}
+                                                            updateCartState = {updateCartState}
+                                                            userCart = {userCart}
+                                                            updateUserCart = {updateUserCart}
+                                                            />} /> 
 
       <Route path='/iniciarsesion' element= {<IniciarSesion nameState={nameState} 
                                                             updateNameState={updateNameState}

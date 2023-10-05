@@ -8,6 +8,8 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     console.log ('>>> VER carro')
     const navigate = useNavigate();
 
+    const [estado, setEstado] = useState (false)
+
     const [totalArticulos, setTotalArticulos] = useState (0)
     const [totalPesos, setTotalPesos] = useState (0)
     const [totalCarro, setTotalCarro] = useState ([])
@@ -15,29 +17,31 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     const rutaActual   = '/vercarro'
     sessionStorage.setItem ('rutaActual', rutaActual)
 
+    window.scrollTo(0, 0);
+
     const [state,] = useContext (ProductContext)
     const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
 
     const consolidaCarro = () => {
-
-    if (sessionStorage.getItem('carroCompras') !== null) 
+    if (localStorage.getItem('carroCompras') !== null) 
     {
-        let carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'))
-        {/* for (let i = 0; i < carroCompras.length - 1; i++) {
+        let carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
+        for (let i = 0; i < carroCompras.length - 1; i++) {
             for (let j = i+1;  j < carroCompras.length; j++) {
                 if (carroCompras[i].codigo == carroCompras[j].codigo) {
                     carroCompras[i].cantidad = carroCompras[i].cantidad + carroCompras[j].cantidad
                     carroCompras[j].cantidad = 0
                 }
             }
-        } */}
+        }
 
         let  totalCarroAux = []
         for (let i = 0; i < carroCompras.length; i++) {
             const codigo   = parseInt(carroCompras[i].codigo)
             const cantidad = parseInt(carroCompras[i].cantidad)
-            if (cantidad !== 0) 
+            if (cantidad !== 0)
             {
+                setEstado (true)
                 const precio   = productos[codigo-1].precio
                 const subTotal = cantidad * precio
                 setTotalArticulos (contador => contador + cantidad)
@@ -45,10 +49,11 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                 totalCarroAux.push ({ codigo, cantidad, precio, subTotal })
             }
         }
-        {/*carroCompras = totalCarroAux.map (articulo => ({ codigo: articulo.codigo, cantidad: articulo.cantidad }));
-        sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras))*/}
+        carroCompras = totalCarroAux.map (articulo => ({ codigo: articulo.codigo, cantidad: articulo.cantidad }))
+        localStorage.setItem('carroCompras', JSON.stringify(carroCompras))
         setTotalCarro (totalCarroAux)
     }
+    
     }
 
     useEffect (() => {
@@ -76,7 +81,7 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
         setTotalPesos (totalPesosAux)
 
         const carroCompras = totalCarroAux.map(objeto => ({ codigo: objeto.codigo, cantidad: objeto.cantidad }))
-        sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+        localStorage.setItem('carroCompras', JSON.stringify(carroCompras));
     }
     
     const sumarUno = (event, index) => {
@@ -102,13 +107,32 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
         setTotalPesos (totalPesosAux)
 
         const carroCompras = totalCarroAux.map(objeto => ({ codigo: objeto.codigo, cantidad: objeto.cantidad }))
-        sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+        localStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+    }
+
+
+    const eliminaProduct = (event, index) => {
+        event.preventDefault();
+
+        const NewTotalArticulos = totalArticulos - totalCarro[index].cantidad
+        setTotalArticulos (NewTotalArticulos)
+        updateUserCart (NewTotalArticulos)
+        const NewTotalPesos = totalPesos - totalCarro[index].subTotal
+        setTotalPesos (NewTotalPesos)
+
+        if (NewTotalArticulos == 0) {
+            updateCartState(false)
+            setEstado (false)
+        }
+        totalCarro.splice(index, 1)
+
+        const carroCompras = totalCarro.map(objeto => ({ codigo: objeto.codigo, cantidad: objeto.cantidad }));
+        localStorage.setItem('carroCompras', JSON.stringify(carroCompras));
     }
 
 
     const seguirComprando = (event) => {
         event.preventDefault();
-
         const rutaCatalogo = sessionStorage.getItem ('rutaCatalogo')
         navigate (rutaCatalogo);
     }
@@ -126,33 +150,16 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
         }
     }
 
-    const eliminaProduct = (event, index) => {
-        event.preventDefault();
-
-        const NewTotalArticulos = totalArticulos - totalCarro[index].cantidad
-        setTotalArticulos (NewTotalArticulos)
-        updateUserCart (NewTotalArticulos)
-        const NewTotalPesos = totalPesos - totalCarro[index].subTotal
-        setTotalPesos (NewTotalPesos)
-
-        if (NewTotalArticulos== 0) {
-            updateCartState(false)
-        }
-        totalCarro.splice(index, 1);
-
-        const carroCompras = totalCarro.map(objeto => ({ codigo: objeto.codigo, cantidad: objeto.cantidad }));
-
-        sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
-    }
 
     return (
     <div className='ver_carro'>
         <br />
         <div className="container text-center">
-            <div className="bs-warning-rgb" style={{ border: "solid red",  borderRadius: "2%", color: "red"}}>
-            <br/><h4>IMPORTANTE: Al finalizar la compra se verificará el stock de cada artículo, ya que éste podría</h4>
-            <h4> ser distinto del actual por compras simultáneas.  Si un producto no tiene stock se te avisará.</h4><br/>
-            </div>
+    {/*     <div className="bs-warning-rgb" style={{ border: "solid red",  borderRadius: "2%", color: "red"}}>
+                <br/><h4>IMPORTANTE: Al finalizar la compra se verificará el stock de cada artículo, ya que éste podría</h4>
+                <h4> ser distinto del actual por compras simultáneas.  Si un producto no tiene stock se te avisará.</h4><br/>
+            </div> 
+    */}
             <br/>
             <div className="row">
                 <div className="col col-md-auto" style={{textAlign: "left", width: "400px"}}>
@@ -160,8 +167,8 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                     <h4>Total Compra &nbsp; ${totalPesos.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
                 </div>
                 <div className="col col-md-auto" style={{textAlign: "left"}}>
-                    <button type="button" className="btn btn-primary" style={{width: "200px"}} onClick={seguirComprando}>Seguir comprando</button> <br/> <br/>
-                    <button type="button" className="btn btn-primary" style={{width: "200px"}} onClick={irAPagar}>Proceder a pagar</button>
+                    <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={seguirComprando}><strong>Seguir comprando</strong></button> <br/> <br/>
+                    {estado && <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={irAPagar}><strong>Proceder a pagar</strong></button>}
                 </div>
             </div>
         </div>

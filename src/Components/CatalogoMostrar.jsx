@@ -94,7 +94,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       const pa = parseInt(sessionStorage.getItem('paginaActual'));
       setPaginaActual (pa)
 
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0)
       
       const tt = productosFiltroAux.length
       setTotalProductos (tt)
@@ -116,6 +116,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       console.log ('CATALOGO FILTRAR 3 ', productosMostrar)
   }
 
+
   useEffect (() => {
     if (state.product.length === 0) {
       console.log ('No hay productos, haciendo fetch')
@@ -129,8 +130,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     filtrarProductos()
     },[filtro, state, productos])
 
+
   const defineMostrar = () => {
-    console.log ('DEFINE MOSTRAR &&&&&&&&&&&&&&&&&&&&&&&&')
     const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
     setProductosPorPagina (pp)
     const pa = parseInt(sessionStorage.getItem('paginaActual'));
@@ -154,7 +155,6 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
               i <  Math.min (paginasAux[pa-1]+pp , tt+1) ;
               i++) { productosMostrar.push(productosFiltro[i-1]); }
     setProductosDisplay (productosMostrar)
-    console.log ('DEFINE MOSTRAR &&&&&&&&&&&&&&&&&&&&&&&& ', productosMostrar)
   }
 
   const flechaIzquierda = () => {
@@ -258,22 +258,23 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     const cantidad = 1
     let totalArticulos = 0
 
-    if (sessionStorage.getItem('carroCompras') == null) 
+    if (localStorage.getItem('carroCompras') == null) 
     {
       const carroCompras = [{codigo, cantidad}];
-      sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+      localStorage.setItem('carroCompras', JSON.stringify(carroCompras));
       totalArticulos = cantidad
     } 
     else
     {
-      const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'));
+      // Consolidar y actualizar 
+      const carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
       for (let i = 0; i < carroCompras.length; i++) {
           console.log ("Sumando ", i, carroCompras[i].cantidad )
           totalArticulos += carroCompras[i].cantidad;
       }
     totalArticulos = totalArticulos + cantidad
-    carroCompras.push({codigo, cantidad});
-    sessionStorage.setItem('carroCompras', JSON.stringify(carroCompras));
+    carroCompras.push({codigo, cantidad})
+    localStorage.setItem('carroCompras', JSON.stringify(carroCompras))
     }
 
     updateCartState (true)
@@ -318,6 +319,14 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
           </select>
         </div>
       </form>
+      
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div className='catalogo_paginas'>
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
+      </div>
+      </div>
 
       <br/>
       <div className="catalogo_contenedor">

@@ -59,7 +59,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
 
             const rut = decoded.data.rut
             console.log ('rut :', typeof(rut), rut)
-            sessionStorage.setItem ('rut', rut)
+            localStorage.setItem ('rut', rut)
 {/*
             const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
             const traeUsuario = await axios.get ( urlUsuario, { headers: { authorization: data } } )

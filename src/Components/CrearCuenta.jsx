@@ -29,7 +29,6 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
                     ...createForm, 
                     [keyForm]: valueForm
                 })
-    console.log (createForm)
   }
 
   const onSubmitCreateForm = async (event) => {
@@ -45,12 +44,12 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
       })
       console.log (data)
 
-      updateNameState (true)
-      updateUserName (createForm.nombre)
-      sessionStorage.setItem ('rut', createForm.rut)
+      // updateNameState (true)
+      // updateUserName (createForm.nombre)
+      // localStorage.setItem ('rut', createForm.rut)
 
-      const regresar = sessionStorage.getItem ('rutaActual');
-      navigate( regresar );
+      const login = '/iniciarsesion'
+      navigate( login );
     }
     catch (error) {
       

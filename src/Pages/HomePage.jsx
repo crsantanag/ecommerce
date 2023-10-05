@@ -41,9 +41,9 @@ export const HomePage = () => {
   const getAllProducts = async () => {
 
     let totalArticulos = 0
-    if (sessionStorage.getItem('carroCompras') !== null) 
+    if (localStorage.getItem('carroCompras') !== null) 
       {
-        const carroCompras = JSON.parse(sessionStorage.getItem('carroCompras'));
+        const carroCompras = JSON.parse(localStorage.getItem('carroCompras'));
         for (let i = 0; i < carroCompras.length; i++) {
             totalArticulos += carroCompras[i].cantidad;
         }
