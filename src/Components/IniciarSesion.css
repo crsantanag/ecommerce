@@ -7,9 +7,14 @@
 .contenedor_500 {
     background-color: rgb(230, 230, 230);
     margin-left: 80px;
-    margin-right: 80px;
     max-width: 500px;
     border: solid black;
     border-radius: 2%;
 
+}
+
+@media (max-width: 768px) {
+    .contenedor_500 {
+        margin-left: 0; /* Elimina el margen izquierdo en pantallas medianas y más pequeñas */
+    }
 }
