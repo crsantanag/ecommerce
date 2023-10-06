@@ -35,27 +35,15 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
     event.preventDefault();
 
     const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
-
     try {
-      const data = await axios.post(url, createForm, {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
+      const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
       console.log (data)
-
-      // updateNameState (true)
-      // updateUserName (createForm.nombre)
-      // localStorage.setItem ('rut', createForm.rut)
-
       const login = '/iniciarsesion'
       navigate( login );
     }
     catch (error) {
-      
       console.log ('Codigo : ',  error.response.status)
       console.log ('Mensaje : ', error.response.data.message)
-
     }
   }
 

@@ -155,11 +155,11 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     <div className='ver_carro'>
         <br />
         <div className="container text-center">
-    {/*     <div className="bs-warning-rgb" style={{ border: "solid red",  borderRadius: "2%", color: "red"}}>
+        <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black"}}>
                 <br/><h4>IMPORTANTE: Al finalizar la compra se verificará el stock de cada artículo, ya que éste podría</h4>
                 <h4> ser distinto del actual por compras simultáneas.  Si un producto no tiene stock se te avisará.</h4><br/>
             </div> 
-    */}
+    
             <br/>
             <div className="row">
                 <div className="col col-md-auto" style={{textAlign: "left", width: "400px"}}>
@@ -167,8 +167,8 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                     <h4>Total Compra &nbsp; ${totalPesos.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )}</h4>
                 </div>
                 <div className="col col-md-auto" style={{textAlign: "left"}}>
-                    <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={seguirComprando}><strong>Seguir comprando</strong></button> <br/> <br/>
-                    {estado && <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={irAPagar}><strong>Proceder a pagar</strong></button>}
+                    <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={seguirComprando}>Seguir comprando</button> <br/> <br/>
+                    {estado && <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "200px"}} onClick={irAPagar}>Proceder a pagar</button>}
                 </div>
             </div>
         </div>
@@ -179,9 +179,9 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                 <div className="catalogo_carro" style={{backgroundColor: "white"}} key={index}>
                     <img data-id={index} src={productos[celda.codigo-1].url} width={100}> 
                     </img> <br/> <br/>
-                    <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "12px"}} onClick={(event) => restaUno (event, index)}> - </button>
+                    <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "14px"}} onClick={(event) => restaUno (event, index)}> - </button>
                     &nbsp;&nbsp;&nbsp;Cantidad &nbsp;&nbsp;&nbsp;
-                    <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "12px"}} onClick={(event) => sumarUno (event, index)}> + </button> <br/>
+                    <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "14px"}} onClick={(event) => sumarUno (event, index)}> + </button> <br/>
                     {productos[celda.codigo-1].grupo}  <br/>
                     {productos[celda.codigo-1].nombre} <br/>
                     ${productos[celda.codigo-1].precio.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )} x {celda.cantidad} = ${celda.subTotal.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )} &nbsp;&nbsp;

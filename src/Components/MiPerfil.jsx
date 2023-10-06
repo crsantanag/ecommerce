@@ -202,7 +202,7 @@ useEffect (() => {
 
         </div>
         <br/>
-        <button type="submit" className="btn btn-primary" onClick= { onSubmitUpdateForm } >Actualizar</button>
+        <button type="submit" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" onClick= { onSubmitUpdateForm } >Actualizar</button>
       </form>
       <br />
     </div>

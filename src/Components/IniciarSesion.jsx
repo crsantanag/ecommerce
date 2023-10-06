@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode"
 import { UserContext } from '../Context/userContext'
 import './IniciarSesion.css'
 
@@ -31,6 +31,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                     })
     }
 
+    
     const onSubmitLoginForm = async (event) => {
         event.preventDefault();
         const urlLogin = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/login'
@@ -45,7 +46,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
 
             const tokenString = JSON.stringify (data)
             const  decoded = jwt_decode (tokenString);
-            setNombre (decoded.data.nombre+' '+decoded.data.apellido)
+            setNombre (decoded.data.nombre + ' ' + decoded.data.apellido)
 
             localStorage.setItem ('token', tokenString)
 
@@ -58,7 +59,6 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
             dispatch ({ type:'LOGIN', payload: data})
 
             const rut = decoded.data.rut
-            console.log ('rut :', typeof(rut), rut)
             localStorage.setItem ('rut', rut)
 {/*
             const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
@@ -112,7 +112,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                         onChange={handleLoginFormChange}
                 />
             </div>
-            <button type="submit" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="submit" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
             Continuar
             </button>
 
@@ -145,7 +145,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                     </div>
                     <div className="modal-footer">
                         <button type="submit" 
-                                className="btn btn-secondary" 
+                                className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" 
                                 data-bs-dismiss="modal"
                                 onClick= { validarClose } >
                                 Cerrar</button>

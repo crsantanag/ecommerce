@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import { ProductContext } from '../Context/productContext';
-import axios from 'axios'
+import jwt_decode from "jwt-decode"
 import { PaypalButton } from './Paypal/PaypalButton'
 import './PagarCarro.css'
 
@@ -38,7 +38,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     }
     const [updateForm, setUpdateForm] = useState (initialUpdateForm)
 
-    const leerUsuario = async () => {
+    const rutaActual   = '/pagarcarro'
+    sessionStorage.setItem ('rutaActual', rutaActual)
+
+{/*    const leerUsuario = async () => {
         // Si rut no existe en la localStorage entonces sale!
         if (localStorage.getItem('rut') !== null) {
             const rut        = localStorage.getItem ('rut')
@@ -56,10 +59,22 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
             }   
         }
     }
+*/}
+
+    const leerUsuario = () => {
+        if (localStorage.getItem('token') !== null) {
+            const tokenString = localStorage.getItem('token')
+            const decoded = jwt_decode (tokenString)
+            console.log ("Decoded: ", decoded)
+            setUpdateForm ({...decoded.data})
+        }
+    }
+
 
     useEffect (() => {
         leerUsuario ()
     },[])
+
 
     const calculaValores = () => {
         let suma = 0
@@ -72,31 +87,23 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
             const subTotal = cantidad * precio
             suma = suma + subTotal
         }
-        
-        setTotalPesos (suma)
-        const pesos = suma
-        console.log (pesos)
 
+        const pesos = suma
+        setTotalPesos (suma)
         const neto = Math.round (pesos / 1.19)
         setTotalNeto (neto)
-        console.log (neto)
-
         const iva = Math.round (pesos - neto)
         setTotalIVA  (iva)
-        console.log (iva)
-
-        const transporte = 3990
+        const transporte = 0
         setGastosDeEnvio (transporte)
-        console.log (transporte)
-
         const grandTotal = pesos + gastosDeEnvio
         setTotalTotal (grandTotal)
-        console.log (grandTotal)
 
         const totalValueAux = (grandTotal / 900)
         const totalValueRnd = parseFloat(totalValueAux.toFixed(2))
         setPagarPaypal (totalValueRnd)
     }
+
 
     useEffect (() => {
         calculaValores ()
@@ -106,15 +113,19 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const handleupdateFormChange = (event) => {
         const keyForm   = event.target.name
         const valueForm = event.target.value
-        setUpdateForm ({
-                        ...updateForm, 
-                        [keyForm]: valueForm
-                        })
+        console.log (keyForm, valueForm)
+        setUpdateForm ({ ...updateForm, [keyForm]: valueForm })
     }
 
 
     const envioDomicilio = async (event) => {
         event.preventDefault()
+        if (!enviaADomicilio) {
+            const transporte = 3990
+            setGastosDeEnvio (transporte)
+            const grandTotal = totalPesos + transporte
+            setTotalTotal (grandTotal)
+        }
         setenviaADomicilio (true)
         setRetiraEnTienda (false)
     }
@@ -122,6 +133,12 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const retiraTienda = async (event) => {
         event.preventDefault()
+        if (!retiraEnTienda) {
+            const transporte = 0
+            setGastosDeEnvio (transporte)
+            const grandTotal = totalPesos
+            setTotalTotal (grandTotal)
+        }
         setRetiraEnTienda (true)
         setenviaADomicilio (false)
     }
@@ -129,8 +146,8 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const irAPagar = async (event) => {
         event.preventDefault()
-        // Debe revisar que todos los campos están OK
-        // Debe revisar que esté seleccionado uno de: "envio a domicilio" o "retira en tienda"
+        // Debe revisar que todos los campos están OK, es decit, que todos los campos estén!!
+
         if (enviaADomicilio || retiraEnTienda) {
             setEstado (true)
         } else {
@@ -146,6 +163,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         navigate (rutaCatalogo);
     }
 
+
 return (
     <div className="pagar_carro">
     <br/>
@@ -159,10 +177,10 @@ return (
         <div style={{display: "flex", alignItems: "center", justifyContent: "center" }}>
             <div className="row">
                 <div className="col col-auto" >
-                    {!enviaADomicilio && <button type="button" className="btn btn-outline-primary" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
-                    { enviaADomicilio && <button type="button" className="btn bg-primary text-white" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
-                    {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary" style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
-                    { retiraEnTienda  && <button type="button" className="btn bg-primary text-white" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
+                    {!enviaADomicilio && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
+                    { enviaADomicilio && <button type="button" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", paddingLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
+                    {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
+                    { retiraEnTienda  && <button type="button" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
                 </div>
                 <br/><br/><br/>
             </div>
@@ -178,7 +196,7 @@ return (
                         id="nombre"  
                         aria-label="nombre"
                         value={updateForm.nombre}
-                            onChange={handleupdateFormChange} />
+                        onChange={handleupdateFormChange} />
                 </div>
                 <div className="col-sm">
                     <label  form="apellido" className="form-label">Apellido</label>
@@ -192,7 +210,6 @@ return (
                 </div>
 
         <div className="row g-1">
-
             <label form="direccion" className="form-label">Dirección (calle y número)</label>
             <input  type="text" 
                     name="direccion"
@@ -200,7 +217,6 @@ return (
                     id="direccion"
                     value={updateForm.direccion}
                     onChange={handleupdateFormChange}  />
-        
         </div>
 
         <div className="row g-1">
@@ -241,8 +257,8 @@ return (
         </div>
         <div className="row">
             <div className="col col-md-auto" >
-                <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { regresar }><strong>Regresar sin comprar</strong></button>
-                <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }><strong>Pagar</strong></button>
+                <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { regresar }>Regresar sin comprar</button>
+                <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }>Pagar</button>
             </div>
             <br/>
         </div>

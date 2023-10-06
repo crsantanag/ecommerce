@@ -46,7 +46,9 @@
 .compraCD_boton_restasuma {
     width: 50px;
     font-size: 18px;
-    border: 1px solid black
+    background-color: #d3e1fc;
+    border: 1px solid #a6c4f9;
+    border-radius: 5px;
 }
 
 .compraCD_cantidad {
@@ -60,9 +62,9 @@
     font-size: 18px;
     align-items: center;
     text-align: center;
-    background-color: #e9f0fd;
+    background-color: #d3e1fc;
     color: black;
-    border: 1px solid black;
+    border: 1px solid #a6c4f9;
     cursor: pointer;
     border-radius: 5px;
 }

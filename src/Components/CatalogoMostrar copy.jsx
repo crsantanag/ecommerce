@@ -2,9 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState, useContext } from 'react';
 import { ProductContext } from '../Context/productContext';
-import axios from 'axios';
-import jwt_decode from "jwt-decode"
 import './CatalogoMostrar.css'
+import axios from 'axios';
 
 export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
   console.log ('CATALOGO MOSTRAR *** /// +++')
@@ -34,7 +33,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const [paginas, setPaginas] = useState ([])
 
   const [state, dispatch] = useContext (ProductContext)
-  console.log ("CATALOGO MOSTRAR - CONTEXT: ",  state.product )
+  console.log ("CATALOGO MOSTRAR - CONTEXT 1: ",  state.product )
   const [productos, setProductos] = useState([])
 
   const getAllProducts = async () => {
@@ -44,7 +43,10 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     console.log ("Data : ", data)
   }
 
+  console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  productos )
+
   const filtrarProductos = () => {
+    console.log ('CATALOGO FILTRAR 1 ', productos)
     const productosFiltroAux = productos
       .filter ( (producto)  => ( producto.tipo == filtro || 
                             producto.grupo.toUpperCase().includes(filtro.toUpperCase()) || 
@@ -62,15 +64,13 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
 
       productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
 
+      console.log ('CATALOGO FILTRAR 2 ', productosFiltroAux)
       const pp = parseInt(sessionStorage.getItem('productosPorPagina'));
       setProductosPorPagina (pp)
       const po = sessionStorage.getItem('productosPorOrden')
       setProductosPorOrden(po)
 
       switch (po) {
-        case "D":
-          productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
-          break;
         case "N-":
           productosFiltroAux.sort((a, b) => a.nombre.localeCompare(b.nombre));
           break;
@@ -112,17 +112,11 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
                 i <  Math.min (paginasAux[pa-1]+pp , tt+1) ;
                 i++) { productosMostrar.push(productosFiltroAux[i-1]); }
       setProductosDisplay (productosMostrar)
+      console.log ('CATALOGO FILTRAR 3 ', productosMostrar)
   }
 
 
   useEffect (() => {
-    if (localStorage.getItem('token') !== null) {
-      const tokenString = localStorage.getItem('token')
-      const decoded = jwt_decode (tokenString)
-      updateUserName  (decoded.data.nombre)
-      updateNameState (true)
-    }
-
     if (state.product.length === 0) {
       console.log ('No hay productos, haciendo fetch')
       getAllProducts()
@@ -141,6 +135,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     setProductosPorPagina (pp)
     const pa = parseInt(sessionStorage.getItem('paginaActual'));
     setPaginaActual (pa)
+    const sp = parseInt(sessionStorage.getItem('scrollPosition'))
+    //window.scrollTo(0, sp);
     window.scrollTo(0, 0);
 
     const tt = totalProductos
@@ -221,9 +217,6 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     setPaginaActual (pa)
 
     switch (po) {
-      case "D":
-        productosFiltro.sort((a, b) => a.codigo - (b.codigo))
-        break;
       case "N-":
         productosFiltro.sort((a, b) => a.nombre.localeCompare(b.nombre));
         break;
@@ -292,55 +285,96 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   return (
     <div className='catalogo_mostrar'>
       <br />
-      <div className="container text-center" >
-        <div className="row justify-content-md-center">
-          <div className="col col-lg-4"></div>
-          <div className="col col-lg-4">
-            Mostrando productos {paginas[paginaActual-1]} al {Math.min (paginas[paginaActual-1]+productosPorPagina-1, totalProductos)} de un total de {totalProductos}
-          </div>
-          <div className="col col-lg-4">
-            <label  className='productos_por_pagina' 
-                    htmlFor="productos_pagina">
-            </label>
-            <select id="productos_paginas"
-                    className='bg_productos_por_pagina'
-                    value={ productosPorPagina } 
-                    onChange={ handleSeleccionPagina }>
-                    <option value="4">Vista</option>
-                    <option value="4"> 4 x página</option>
-                    <option value="8"> 8 x página</option>
-                    <option value="16">16 x página</option>
-                    <option value="32">32 x página</option>
-                    <option value="64">64 x página</option>
-            </select>
-          </div>
-        </div>
-        
-        <div className="row justify-content-md-center" >
-          <div className="col col-lg-4"></div>
-          <div className="col col-lg-4">
-            <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
-          </div>
-          <div className="col col-lg-4">
-            <label  className='productos_por_orden'
-                    htmlFor="productos_orden">
-            </label>
-            <select id="productos_orden"
-                    className='bg_productos_por_orden'
-                    value={ productosPorOrden } 
-                    onChange={ handleSeleccionOrdenar }>
-                    <option value="D">Ordenar por</option>
-                    <option value="N-">Nombre A-Z</option>
-                    <option value="N+">Nombre Z-A</option>
-                    <option value="P-">Precio menor</option>
-                    <option value="P+">Precio mayor</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      {/*<h2>Catálogo: {filtro}</h2>*/}
 
+      <form>
+      <div className="container text-center" >
+      <div className="row justify-content-md-center">
+    <div className="col col-lg-4"></div>
+    <div className="col col-lg-4">
+    Mostrando productos {paginas[paginaActual-1]} al {Math.min (paginas[paginaActual-1]+productosPorPagina-1, totalProductos)} de un total de {totalProductos}
+    </div>
+    <div className="col col-lg-4">
+    <label  className='productos_por_pagina' 
+                  htmlFor="productos_pagina">Productos por página :
+          </label>
+          <select id="productos_paginas" 
+                  value={ productosPorPagina } 
+                  onChange={ handleSeleccionPagina }>
+                  <option value="4">-- Seleccionar --</option>
+                  <option value="4"> 4 x página</option>
+                  <option value="8"> 8 x página</option>
+                  <option value="16">16 x página</option>
+                  <option value="32">32 x página</option>
+                  <option value="64">64 x página</option>
+          </select>
+    </div>
+  </div>
+  <div className="row justify-content-md-center" style={{height: "6vh"}}>
+    <div className="col col-lg-4"></div>
+    <div className="col col-lg-4">
+
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
+      
+
+    </div>
+    <div className="col col-lg-4">
+    <label  className='productos_por_orden'
+                  htmlFor="productos_orden">&nbsp;&nbsp;Productor por orden :
+          </label>
+          <select id="productos_orden"
+                  value={ productosPorOrden } 
+                  onChange={ handleSeleccionOrdenar }>
+                  <option value="">-- Seleccionar --</option>
+                  <option value="N-">Nombre A-Z</option>
+                  <option value="N+">Nombre Z-A</option>
+                  <option value="P-">Precio menor</option>
+                  <option value="P+">Precio mayor</option>
+          </select>
+    </div>
+  </div>
+
+</div>
+        <div>
+          Mostrando productos {paginas[paginaActual-1]} al {Math.min (paginas[paginaActual-1]+productosPorPagina-1, totalProductos)} de 
+          un total de {totalProductos} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <label  className='productos_por_pagina' 
+                  htmlFor="productos_pagina">Productos por página :
+          </label>
+          <select id="productos_paginas" 
+                  value={ productosPorPagina } 
+                  onChange={ handleSeleccionPagina }>
+                  <option value="4">-- Seleccionar --</option>
+                  <option value="4"> 4 x página</option>
+                  <option value="8"> 8 x página</option>
+                  <option value="16">16 x página</option>
+                  <option value="32">32 x página</option>
+                  <option value="64">64 x página</option>
+          </select>
+          <label  className='productos_por_orden'
+                  htmlFor="productos_orden">&nbsp;&nbsp;Productor por orden :
+          </label>
+          <select id="productos_orden"
+                  value={ productosPorOrden } 
+                  onChange={ handleSeleccionOrdenar }>
+                  <option value="">-- Seleccionar --</option>
+                  <option value="N-">Nombre A-Z</option>
+                  <option value="N+">Nombre Z-A</option>
+                  <option value="P-">Precio menor</option>
+                  <option value="P+">Precio mayor</option>
+          </select>
+        </div>
+      </form>
+      
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div className='catalogo_paginas'>
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
+      </div>
+      </div>
 
       <br/>
       <div className="catalogo_contenedor">
@@ -361,6 +395,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
           <div style={{paddingTop:"15px"}}></div>
           <button className='compraCD_boton_comprar'
                   type="submit"
+                  /*onClick={() => window.history.back()}>*/
                   onClick= { (event) => agregarCarro (event, celda.codigo) }>Agregar al carro</button>
         
         </div>
