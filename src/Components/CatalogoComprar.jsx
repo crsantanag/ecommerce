@@ -47,7 +47,7 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
     catch (error) 
     {
       console.log ("ERROR: No es posible obtener TRACK LIST", error)
-    }a
+    }
   }
 
 
