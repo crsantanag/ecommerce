@@ -41,12 +41,13 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
     try {
       const dataTrackList = await respTrackList.json();
       setTrackList(dataTrackList.album.tracks.track)
+      console.log (dataTrackList)
       window.scrollTo(0, 0)
     }
     catch (error) 
     {
       console.log ("ERROR: No es posible obtener TRACK LIST", error)
-    }
+    }a
   }
 
 
