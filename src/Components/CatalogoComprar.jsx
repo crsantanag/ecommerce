@@ -35,7 +35,7 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
     const nombre = productos[index].nombre.replace (' ','+')
     const grupo  = productos[index].grupo.replace  (' ', '+')
 
-    const urlIndicadores = "http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=2ee7569785c94e3b063786ac07345e13&artist="+grupo+"&album="+nombre+"&format=json"
+    const urlIndicadores = "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=2ee7569785c94e3b063786ac07345e13&artist="+grupo+"&album="+nombre+"&format=json"
     console.log (nombre, grupo)
     const respTrackList = await fetch(urlIndicadores);
     try {
