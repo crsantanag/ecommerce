@@ -46,7 +46,7 @@
 .bg_productos_por_pagina {
     border-radius: 5px;
     height: 40px;
-    width: 200px;
+    width: 150px;
     background-color: #d3e1fc;
     border: 1px solid #a6c4f9;
 }
@@ -54,7 +54,7 @@
 .bg_productos_por_orden {
     border-radius: 5px;
     height: 40px;
-    width: 200px;
+    width: 150px;
     background-color: #d3e1fc;
     border: 1px solid #a6c4f9;
 }
