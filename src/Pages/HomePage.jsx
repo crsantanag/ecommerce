@@ -9,7 +9,7 @@ import jwt_decode from "jwt-decode"
 import './HomePage.css'
 
 export const HomePage = () => {
-  console.log ('HOMEPAGE *** /// +++')
+  console.log ('HOME PAGE *** /// +++')
 
   // Defino un estado que pueda ser modificado por NavBar
   const [nameState, setNameState] = useState(false);
@@ -61,8 +61,8 @@ export const HomePage = () => {
       } 
       
       const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
-      console.log ('HOME PAGE : ', data)
       dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
+      console.log ('HOME PAGE - dispatch', data)
   }
 
   useEffect(() => {

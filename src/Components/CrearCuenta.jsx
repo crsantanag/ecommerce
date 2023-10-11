@@ -7,6 +7,13 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
 
   const navigate = useNavigate();
 
+  const [esperaModal, setEsperaModal] = useState (true)
+  const [exito, setExito]   = useState (false)
+
+  const [errorDatos, setErrorDatos] = useState (false)
+  const [errorRutEmail, setErrorRutEmail] = useState (false)
+  const [errorServer, setErrorServer] = useState (false)
+
   const initialCreateForm = {
     nombre:   '',
     apellido: '',
@@ -34,16 +41,44 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
   const onSubmitCreateForm = async (event) => {
     event.preventDefault();
 
+    setEsperaModal (true)
+    setExito (false)
+    setErrorDatos (false)
+    setErrorRutEmail (false)
+    setErrorServer (false)
+
     const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
     try {
       const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
       console.log (data)
-      const login = '/iniciarsesion'
-      navigate( login );
+      setExito (true)
     }
     catch (error) {
       console.log ('Codigo : ',  error.response.status)
       console.log ('Mensaje : ', error.response.data.message)
+
+      const status  = error.response.status
+      if (status == 400) {
+         setErrorDatos (true)
+      }
+      if (status == 410) {
+        setErrorRutEmail (true)
+      }
+      if (status == 500) {
+        setErrorServer (true)
+      }
+      setExito (false)
+    }
+    setEsperaModal (false)
+  }
+
+
+  const validarClose = (event) => {
+    event.preventDefault();
+
+    if (exito) {
+      const login = '/iniciarsesion'
+      navigate( login )
     }
   }
 
@@ -178,8 +213,58 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
             </div>
           </div>
         </div>
-        <button type="submit" className="btn btn-primary" onClick= { onSubmitCreateForm } >Continuar</button>
+        <button type="submit" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick= { onSubmitCreateForm } >Continuar</button>
       </form>
+
+              {/* <!-- Modal --> */}
+              <div className="modal fade" id="exampleModal"  tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">Creando usuario  ... </h1>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        {esperaModal &&  
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden"></span>
+                            </div>
+                        }
+                        {!esperaModal && exito &&
+                            <div>
+                                Usuario {createForm.nombre} {createForm.apellido} ha sido creado
+                            </div>
+                        }
+
+                        {!esperaModal && errorDatos &&
+                            <div>
+                                Error: Debe ingresar todos los datos solicitados
+                            </div>
+                        }
+                        {!esperaModal && errorRutEmail &&
+                            <div>
+                                Error: Rut ya existe
+                            </div>
+                        }
+
+                        {!esperaModal && errorServer &&
+                            <div>
+                                Error: Mail ya existe
+                            </div>
+                        }
+
+                    </div>
+                    <div className="modal-footer">
+                        <button type="submit" 
+                                className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" 
+                                data-bs-dismiss="modal"
+                                onClick= { validarClose } >
+                                Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
       <br />
     </div>
     </div>

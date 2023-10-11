@@ -1,6 +1,10 @@
+import { AnulaReservas } from './AnulaReservas';
 import './Nosotros.css'
 
 export const Nosotros = () => {
+
+  AnulaReservas ()
+
   return (
     <div>
       <div className="texto">

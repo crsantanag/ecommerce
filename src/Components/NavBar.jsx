@@ -12,9 +12,6 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
   const location = useLocation()
   const rutaActual = location.pathname;
 
-  const scrollPosition = window.scrollY;
-  sessionStorage.setItem('scrollPosition', scrollPosition.toString());
-
   console.log ('NAVBAR *** /// +++', rutaActual)
 
   // Hay un problema cuando elimino la busqueda (botón X)... se mantiene el SEARCH (p.e. SANTANA)
@@ -120,7 +117,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
               </li>
             </ul>
 
-            <form className="d-flex" role="search" style={{height: "45px", width: "400px"}} onSubmit={handleSubmit}>
+            <form className="d-flex" role="search" style={{height: "45px", width: "400px", borderRadius: "5px"}} onSubmit={handleSubmit}>
               <input  className="form-control me-1" 
                       type="search" 
                       placeholder="Buscar en el todo el catálogo" 
@@ -129,7 +126,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
                       value={ buscar } 
                       onChange={ handleChange }
               />
-              <button className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{height: "45px"}}
+              <button className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{height: "40px"}}
                       type="submit"
                       onClick = { validaBuscar }>
                       Buscar

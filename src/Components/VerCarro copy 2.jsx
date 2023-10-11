@@ -21,30 +21,40 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     window.scrollTo(0, 0)
 
     const [state, dispatch] = useContext (ProductContext)
-    const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+    const [productos, setProductos] = useState([])
 
     const getAllProducts = async () => {
         const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
         dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
         console.log ('VER_CARRO - dispatch', data)
-        // setProductos(data)
+        setProductos(data)
     }
 
+
     const cargaProductos = () => {
-        if (state.product.length == 0) {
+        if (state.product.length === 0) {
             getAllProducts()
-            console.log ('Haciendo GET') 
+            console.log ('Haciendo GET')       }
+        else {
+            console.log ('Haciendo SET')
+            console.log ("state.product: ",state.product)
+            setProductos (state.product)
+            const productosAux = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+            console.log ("productosAux : ", productosAux)
+            console.log ("productos    : ", productos)
+            alert ('Veamos')
         }
     }
 
     useEffect (() => {
         cargaProductos ()
-    },[])
+    },[state, productos])
 
 
     const consolidaCarro = () => {
         const productosAux = [...productos]
         console.log (productosAux)
+        alert ('Veamos')
 
         if (localStorage.getItem('carroCompras') !== null) 
         {
@@ -64,6 +74,8 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                 if (cantidad !== 0)
                 {
                     setEstado (true)
+                    console.log ("Consolidando : ", productos)
+                    alert ('Veamos')
                     const precio   = productos[codigo-1].precio
                     const subTotal = cantidad * precio
                     setTotalArticulos (contador => contador + cantidad)
@@ -88,7 +100,7 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
 
     useEffect (() => {
         consolidaCarro ()
-    },[])
+    },[productos])
 
 
     const eliminaReservas = async () => {

@@ -9,6 +9,8 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
 
   const navigate = useNavigate();
 
+  const [esperaModal, setEsperaModal] = useState (true)
+
   const initialUpdateForm = {
     nombre:   '',
     apellido: '',
@@ -42,19 +44,19 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
     }
   }
 
-const [state, dispatch] = useContext (UserContext)
-console.log ("MIPERFIL - CONTEXT 1: ")
-const token = state.token
-console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  token )
-
-console.log ("USE_EFFECT de MIPERFIL")
-
-useEffect (() => {
-  leerUsuario ()
-},[])
+  
+  const [state, dispatch] = useContext (UserContext)
+  console.log ("MIPERFIL - CONTEXT 1: ")
+  const token = state.token
+  console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  token )
 
 
-  const handleupdateFormChange = (event) => {
+  useEffect (() => {
+    leerUsuario ()
+  },[])
+
+
+  const handleUpdateFormChange = (event) => {
     const keyForm   = event.target.name
     const valueForm = event.target.value
     setUpdateForm ({
@@ -64,6 +66,7 @@ useEffect (() => {
     console.log (updateForm)
   }
 
+
   const onSubmitUpdateForm = async (event) => {
     event.preventDefault();
 
@@ -71,14 +74,16 @@ useEffect (() => {
     const rut        = localStorage.getItem ('rut')
     const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
+    setEsperaModal (true)
     try {
       const actualizaUsuario = await axios.put ( urlUsuario, updateForm,  { headers:  { authorization: data } } )
-      console.log (actualizaUsuario)
-      updateUserName (updateForm.nombre)
-      sessionStorage.setItem ('rut-', updateForm.rut)
+      const nombreUsuario = updateForm.nombre
+      updateUserName (nombreUsuario)
 
-      const regresar = sessionStorage.getItem ('rutaActual');
-      navigate( regresar );
+      // hacer Dispatch
+      // dispatch ({ type:'LOGIN', payload: data})
+
+
     }
     catch (error) {
       
@@ -86,8 +91,18 @@ useEffect (() => {
       console.log ('Mensaje : ', error.response.data.mesagge)
 
     }
-    dispatch ({ type:'LOGIN', payload: data})
+    setEsperaModal (false)
+    // dispatch ({ type:'LOGIN', payload: data})
   }
+
+
+  const validarClose = (event) => {
+    event.preventDefault();
+
+    const regresar = sessionStorage.getItem ('rutaActual');
+    navigate( regresar );
+  }
+
 
   return (
 
@@ -109,7 +124,7 @@ useEffect (() => {
                     id="nombre"  
                     aria-label="nombre"
                     value={updateForm.nombre}
-                    onChange={handleupdateFormChange} />
+                    onChange={handleUpdateFormChange} />
           </div>
           <div className="col-sm">
             <label  form="apellido" className="form-label">Apellido</label>
@@ -119,7 +134,7 @@ useEffect (() => {
                     id="apellido"  
                     aria-label="apellido"
                     value={updateForm.apellido}
-                    onChange={handleupdateFormChange} />
+                    onChange={handleUpdateFormChange} />
           </div>
           <div className="row g-1">
             <div className="col-sm">
@@ -129,7 +144,7 @@ useEffect (() => {
                     className="form-control" 
                     id="email" 
                     value={updateForm.email}
-                    onChange={handleupdateFormChange} />
+                    onChange={handleUpdateFormChange} />
             </div>
             <div className="col-sm">
               <label  form="rut" className="form-label">Rut</label>
@@ -138,7 +153,7 @@ useEffect (() => {
                       className="form-control"
                       id="rut"
                       value={updateForm.rut}
-                      onChange={handleupdateFormChange} />
+                      onChange={handleUpdateFormChange} />
             </div>
           </div>
 
@@ -150,7 +165,7 @@ useEffect (() => {
                     className="form-control" 
                     id="inputPassword"
                     value={updateForm.password}
-                    onChange={handleupdateFormChange} />
+                    onChange={handleUpdateFormChange} />
           </div>
 
           <div className="col-sm">
@@ -170,7 +185,7 @@ useEffect (() => {
                     className="form-control" 
                     id="direccion"
                     value={updateForm.direccion}
-                    onChange={handleupdateFormChange}  />
+                    onChange={handleUpdateFormChange}  />
           </div>
 
 
@@ -178,12 +193,12 @@ useEffect (() => {
             <div className="col-sm">
               <label form="comuna" className="form-label">Comuna</label>
               <input type="text"  name="comuna" className="form-control" id="comuna" value={updateForm.comuna}
-                      onChange={handleupdateFormChange}  />
+                      onChange={handleUpdateFormChange}  />
             </div>
             <div className="col-sm">
               <label form="ciudad" className="form-label">Ciudad</label>
               <input type="text" name="ciudad" className="form-control" id="ciudad"  value={updateForm.ciudad}
-                      onChange={handleupdateFormChange}   />
+                      onChange={handleUpdateFormChange}   />
             </div>
           </div>
 
@@ -191,19 +206,53 @@ useEffect (() => {
             <div className="col-sm">
               <label form="region" className="form-label">Region</label>
               <input type="text" name="region" className="form-control" id="region"  value={updateForm.region}
-                      onChange={handleupdateFormChange}  />
+                      onChange={handleUpdateFormChange}  />
             </div>
             <div className="col-sm">
               <label form="telefono" className="form-label">Teléfono</label>
               <input type="text" name="telefono" className="form-control" id="telefono"  value={updateForm.telefono}
-                      onChange={handleupdateFormChange}  />
+                      onChange={handleUpdateFormChange}  />
             </div>
           </div>
 
         </div>
         <br/>
-        <button type="submit" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" onClick= { onSubmitUpdateForm } >Actualizar</button>
+        <button type="submit" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick= { onSubmitUpdateForm } >Actualizar</button>
       </form>
+
+        {/* <!-- Modal --> */}
+        <div className="modal fade" id="exampleModal"  tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">Actualizando ... </h1>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        {esperaModal     &&  
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden"></span>
+                            </div>
+                        }
+                        {!esperaModal  && 
+                            <div>
+                                Sus datos se han actualizado
+                            </div>
+                        }
+
+                    </div>
+                    <div className="modal-footer">
+                        <button type="submit" 
+                                className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" 
+                                data-bs-dismiss="modal"
+                                onClick= { validarClose } >
+                                Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
       <br />
     </div>
     </div>

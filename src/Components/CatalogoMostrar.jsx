@@ -7,7 +7,7 @@ import jwt_decode from "jwt-decode"
 import './CatalogoMostrar.css'
 
 export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
-  console.log ('CATALOGO MOSTRAR *** /// +++')
+  console.log ('CATALOGO_MOSTRAR')
 
   const navigate   = useNavigate();
   const  { filtro }  = useParams();
@@ -34,14 +34,13 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const [paginas, setPaginas] = useState ([])
 
   const [state, dispatch] = useContext (ProductContext)
-  console.log ("CATALOGO MOSTRAR - CONTEXT: ",  state.product )
   const [productos, setProductos] = useState([])
 
   const getAllProducts = async () => {
     const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
     dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
+    console.log ('CATALOGO_COMPRAR - dispatch', data)
     setProductos(data)
-    console.log ("Data : ", data)
   }
 
   const filtrarProductos = () => {
@@ -83,6 +82,12 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
         case "P+":
           productosFiltroAux.sort((a, b) => b.precio - (a.precio));
           break;
+        case "V-":
+          productosFiltroAux.sort((a, b) => a.ventas - (b.ventas));
+          break;
+        case "V+":
+          productosFiltroAux.sort((a, b) => b.ventas - (a.ventas));
+          break;
         default:
           productosFiltroAux.sort((a, b) => a.codigo - (b.codigo))
           break;
@@ -116,20 +121,16 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
 
 
   useEffect (() => {
-    if (localStorage.getItem('token') !== null) {
-      const tokenString = localStorage.getItem('token')
-      const decoded = jwt_decode (tokenString)
-      updateUserName  (decoded.data.nombre)
-      updateNameState (true)
-    }
-
     if (state.product.length === 0) {
-      console.log ('No hay productos, haciendo fetch')
+      if (localStorage.getItem('token') !== null) {
+        const tokenString = localStorage.getItem('token')
+        const decoded = jwt_decode (tokenString)
+        updateUserName  (decoded.data.nombre)
+        updateNameState (true)
+      }
       getAllProducts()
     }
     else {
-      console.log ('Hay productos, haciendo set')
-      console.log ("STATE: ", state.product)
       setProductos (state.product)
     }
     filtrarProductos()
@@ -236,6 +237,12 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       case "P+":
         productosFiltro.sort((a, b) => b.precio - (a.precio));
         break;
+      case "V-":
+        productosFiltro.sort((a, b) => a.ventas - (b.ventas));
+        break;
+      case "V+":
+        productosFiltro.sort((a, b) => b.ventas - (a.ventas));
+        break;
       default:
         productosFiltro.sort((a, b) => a.codigo - (b.codigo))
         break;
@@ -250,8 +257,6 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       return
     }
     
-    const scrollPosition = window.scrollY;
-    sessionStorage.setItem('scrollPosition', scrollPosition.toString());
     sessionStorage.setItem('productosPorPagina', productosPorPagina);
     sessionStorage.setItem('paginaActual', paginaActual);
 
@@ -275,7 +280,6 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       // Consolidar y actualizar 
       const carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
       for (let i = 0; i < carroCompras.length; i++) {
-          console.log ("Sumando ", i, carroCompras[i].cantidad )
           totalArticulos += carroCompras[i].cantidad;
       }
     totalArticulos = totalArticulos + cantidad
@@ -286,6 +290,9 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
     updateCartState (true)
     updateUserCart  (totalArticulos)
 
+    const ultimaRuta   = '/CatalogoMostrar'
+    sessionStorage.setItem ('ultimaRuta', ultimaRuta)
+
     navigate(`/vercarro/`);
   }
 
@@ -294,60 +301,57 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       <br />
       <div className="container text-center" >
         <div className="row justify-content-md-center">
-          <div className="col col-lg-4"></div>
-          <div className="col col-lg-4">
-            Mostrando productos {paginas[paginaActual-1]} al {Math.min (paginas[paginaActual-1]+productosPorPagina-1, totalProductos)} de un total de {totalProductos}
-          </div>
-          <div className="col col-lg-4">
-            <label  className='productos_por_pagina' 
-                    htmlFor="productos_pagina">
+
+          <div className="col col-lg-4" style={{ display: 'flex', justifyContent: 'right' }}>
+            <label  htmlFor="productos_pagina">
             </label>
             <select id="productos_paginas"
                     className='bg_productos_por_pagina'
                     value={ productosPorPagina } 
                     onChange={ handleSeleccionPagina }>
-                    <option value="4">Vista</option>
-                    <option value="4"> 4 x página</option>
-                    <option value="8"> 8 x página</option>
+                    <option value="4">Vista       </option>
+                    <option value="4"> 4 x página </option>
+                    <option value="8"> 8 x página </option>
                     <option value="16">16 x página</option>
                     <option value="32">32 x página</option>
                     <option value="64">64 x página</option>
             </select>
           </div>
-        </div>
-        
-        <div className="row justify-content-md-center" >
-          <div className="col col-lg-4"></div>
-          <div className="col col-lg-4">
-            <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
-          </div>
-          <div className="col col-lg-4">
-            <label  className='productos_por_orden'
-                    htmlFor="productos_orden">
+          <div className="col col-lg-4" style={{ display: 'flex', justifyContent: 'left' }}>
+            <label  htmlFor="productos_orden">
             </label>
             <select id="productos_orden"
                     className='bg_productos_por_orden'
                     value={ productosPorOrden } 
                     onChange={ handleSeleccionOrdenar }>
-                    <option value="D">Ordenar por</option>
-                    <option value="N-">Nombre A-Z</option>
-                    <option value="N+">Nombre Z-A</option>
+                    <option value="D">Ordenar por  </option>
+                    <option value="N-">Nombre A-Z  </option>
+                    <option value="N+">Nombre Z-A  </option>
                     <option value="P-">Precio menor</option>
                     <option value="P+">Precio mayor</option>
+                    <option value="V-">Ventas menor</option>
+                    <option value="V+">Ventas mayor</option>
             </select>
           </div>
         </div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50px' }}>
+            Mostrando productos {paginas[paginaActual-1]} al {Math.min (paginas[paginaActual-1]+productosPorPagina-1, totalProductos)} de un total de {totalProductos}
+          </div>
+      
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div className='catalogo_paginas'>
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaIzquierda }> - </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mostrando  página {paginaActual} de {totalPaginas}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
+      </div>
       </div>
 
+      </div>
 
       <br/>
       <div className="catalogo_contenedor">
-
         {productosDisplay.map ((celda, index) => (
         <div className="catalogo_grid" style={{backgroundColor: "white"}} key={index}>
-        
           <img 
             src={celda.url} 
             onClick={(event) => handleProductCD (event, celda.codigo, celda.stock)}
@@ -361,8 +365,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
           <div style={{paddingTop:"15px"}}></div>
           <button className='compraCD_boton_comprar'
                   type="submit"
-                  onClick= { (event) => agregarCarro (event, celda.codigo) }>Agregar al carro</button>
-        
+                  onClick= { (event) => agregarCarro (event, celda.codigo) }>Agregar al carro
+          </button>
         </div>
         ))}
       </div>

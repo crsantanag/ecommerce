@@ -124,7 +124,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="exampleModalLabel">Verificando </h1>
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">Verificando ... </h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
@@ -133,9 +133,10 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
                                 <span className="visually-hidden"></span>
                             </div>
                         }
-                        {exito  && <div>
+                        {exito  && 
+                            <div>
                                 Bienvenido {nombre}
-                                    </div>
+                            </div>
                         }
                         {error  && 
                             <div>
