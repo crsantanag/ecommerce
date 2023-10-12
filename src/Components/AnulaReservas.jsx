@@ -1,17 +1,13 @@
-import { useContext, useEffect} from 'react';
-import { ProductContext } from '../Context/productContext';
 import axios from 'axios';
 
-export const AnulaReservas = () => {
+export const AnulaReservas = async () => {
 
-    const [state,] = useContext (ProductContext)
-    const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
-
-    const eliminaReservas = async () => {
         console.log ('>>> Eliminando reservas (desde función) ...')
 
         if (sessionStorage.getItem('carroConStock') !== null) {
             const carroCompras = JSON.parse(sessionStorage.getItem('carroConStock'))
+            sessionStorage.removeItem ('ultimaRuta')
+            sessionStorage.removeItem ('carroConStock')
 
             for (let i = 0; i < carroCompras.length; i++) {
             
@@ -19,7 +15,6 @@ export const AnulaReservas = () => {
                 const cantidadCarro = carroCompras[i].cantidad
 
                 const urlProduct = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products/' + codigoString
-                const index = carroCompras[i].codigo-1
 
                 try 
                 {
@@ -27,9 +22,11 @@ export const AnulaReservas = () => {
                     const product_stock = data[0].stock
                     const nuevo_stock = product_stock + cantidadCarro
 
-                    const objeto = productos[index]
+                    const objeto = data[0]
+                    console.log ('Anula reserva - antes', objeto)
                     objeto.stock = nuevo_stock
                     objeto.ventas = objeto.ventas - cantidadCarro
+                    console.log ('Anula reserva - despues', objeto)
 
                     try 
                     {
@@ -46,14 +43,10 @@ export const AnulaReservas = () => {
                     console.log ('Error en get', error)
                 }
             }
-            sessionStorage.removeItem ('ultimaRuta')
-            sessionStorage.removeItem ('carroConStock')
-        }
-    }
 
-    useEffect (() => {
-        eliminaReservas ()
-    },[])
+        } else {
+            console.log ('>>> No hay reservas para eliminar')
+        }
 
     return (
     <></>

@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { UserContext } from '../Context/userContext'
+import { AnulaReservas } from './AnulaReservas';
 
 export const NavBar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
@@ -14,7 +15,6 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
 
   console.log ('NAVBAR *** /// +++', rutaActual)
 
-  // Hay un problema cuando elimino la busqueda (botón X)... se mantiene el SEARCH (p.e. SANTANA)
   const handleChange = (event) => {
     const nuevoValor = event.target.value;
     setBuscar(nuevoValor);

@@ -75,24 +75,27 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                 try 
                 {
                     const { data } = await axios.get (urlProduct)
-                    const product_codigo = data[0].codigo
-                    const product_stock  = data[0].stock
-                    const nuevo_stock    = product_stock - cantidadCarro
+                    const productoCodigo = data[0].codigo
+                    const productoStock  = data[0].stock
+                    const nuevoStock     = data[0].stock  - cantidadCarro
+                    const nuevaVenta     = data[0].ventas + cantidadCarro
 
-                    if (nuevo_stock >= 0) {
+                    if (nuevoStock >= 0) {
                         const objeto  = productos[index]
-                        objeto.stock  = nuevo_stock
-                        objeto.ventas = objeto.ventas + cantidadCarro
+                        console.log ("OJO 1", objeto)
+                        objeto.stock  = nuevoStock
+                        objeto.ventas = nuevaVenta
+                        console.log ("OJO 2", objeto)
                         try 
                         {
                             await axios.put ( urlProduct, objeto)
-                            productosConStock.push ({"codigo": product_codigo, "cantidad": cantidadCarro, "stock": product_stock})
+                            productosConStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
                             setEstadoProductosCon (true)
                         } catch (error) {
                             console.log ('Error en put', error)
                         }
                     } else {
-                        productosSinStock.push ({"codigo": product_codigo, "cantidad": cantidadCarro, "stock": product_stock})
+                        productosSinStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
                         setEstadoProductosSin (true)
                     }
                 } catch (error) {
@@ -212,15 +215,15 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 return (
     <div className="pagar_carro" >
         <br/>
-        <div className="row">
+        <div className="row g-2">
             <br/>
             <div className="contenedor_650">
-                <div className='container'>
+                <div className='container-md'>
                     <h4>Información de envío</h4>
                     <h5>¿ Cómo quieres recibir tu pedido ?</h5> 
                     
-                    <div className="row">
-                        <div className="col col-auto" >
+                    <div className="row g-1">
+                        <div className="col-sm" >
                             {!enviaADomicilio && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
                             { enviaADomicilio && <button type="button" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
                             {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
@@ -313,6 +316,7 @@ return (
 
             <br/><br/>
             <div className="contenedor_650">
+            <div className='container-md'>
                 <br/>
 
                 <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center", height: "150px"}}>
@@ -384,6 +388,7 @@ return (
                 <br/>
         
                 { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
+            </div>
             </div>
         </div>
         <br/>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
+import { AnulaReservas } from './AnulaReservas';
 import './Contacto.css'
 
 export const Contacto = () => {
@@ -11,6 +12,8 @@ export const Contacto = () => {
 
   const [showErrorDatos, setShowErrorDatos] = useState(false);
   const [showExito, setShowExito] = useState(false);
+
+  AnulaReservas ()
 
   // Función para manejar el envío del formulario
   const handleSubmit = (event) => {

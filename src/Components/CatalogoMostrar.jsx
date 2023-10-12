@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState, useContext } from 'react';
 import { ProductContext } from '../Context/productContext';
+import { AnulaReservas } from './AnulaReservas';
 import axios from 'axios';
 import jwt_decode from "jwt-decode"
 import './CatalogoMostrar.css'
@@ -36,6 +37,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const [state, dispatch] = useContext (ProductContext)
   const [productos, setProductos] = useState([])
 
+  AnulaReservas()
+  
   const getAllProducts = async () => {
     const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
     dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
@@ -162,9 +165,12 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   }
 
   const flechaIzquierda = () => {
-    if (paginaActual == 1) return
-
-    const pa = paginaActual - 1
+    let pa = paginaActual
+    if (pa == 1 ) {
+      pa = totalPaginas
+    } else {
+      pa = pa - 1
+    }
     const pp = productosPorPagina
     const tt = totalProductos
     sessionStorage.setItem('paginaActual', pa);
@@ -181,9 +187,12 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   }
 
   const flechaDerecha = () => {
-    if (paginaActual == totalPaginas ) return
-
-    const pa = paginaActual + 1
+    let pa = paginaActual
+    if (pa == totalPaginas ) {
+      pa = 1
+    } else {
+      pa = pa + 1
+    }
     const pp = productosPorPagina
     const tp = totalProductos
     sessionStorage.setItem('paginaActual', pa);

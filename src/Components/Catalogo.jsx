@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { AnulaReservas } from './AnulaReservas';
 import './Catalogo.css'
 
 export const Catalogo = () => {
@@ -14,6 +15,8 @@ export const Catalogo = () => {
   const paginaActual = 1
   sessionStorage.setItem('paginaActual', paginaActual);
 
+  AnulaReservas()
+  
   const handleClick1 = () => {
     navigate('/catalogomostrar/CompactDisc');
   }
@@ -28,8 +31,6 @@ export const Catalogo = () => {
 
   return (
     <div className='catalogo'>
-      <br />
-      <h2>Catálogo</h2>
       <br></br>
       <div className="catalogo">
         <h2>CD Musicales</h2>

@@ -6,9 +6,14 @@ import './CatalogoComprar.css'
 
 export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
+  window.scrollTo(0, 0)
+  
   const { item } = useParams();
   const itemNum  = parseInt (item, 10)
   const index    = parseInt (item, 10) - 1
+
+  const [tieneDescripcion, setTieneDescripcion] = useState (false)
+  const [descripcion, setDescripcion] = useState ("")
 
   const [state,] = useContext (ProductContext)
   const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
@@ -31,22 +36,30 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
       }
 
     // Si es CompactDisc ==> leerTracks; si no es CompactDisc ==> leer descripción
+    const tipo = productos[index].tipo
+    
+    if (tipo == "CompactDisc") {
 
-    const nombre = productos[index].nombre.replace (' ','+')
-    const grupo  = productos[index].grupo.replace  (' ', '+')
+      setTieneDescripcion (false)
+      const nombre = productos[index].nombre.replace (' ','+')
+      const grupo  = productos[index].grupo.replace  (' ', '+')
 
-    const urlIndicadores = "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=2ee7569785c94e3b063786ac07345e13&artist="+grupo+"&album="+nombre+"&format=json"
-    console.log (nombre, grupo)
-    const respTrackList = await fetch(urlIndicadores);
-    try {
-      const dataTrackList = await respTrackList.json();
-      setTrackList(dataTrackList.album.tracks.track)
-      console.log (dataTrackList)
-      window.scrollTo(0, 0)
-    }
-    catch (error) 
-    {
-      console.log ("ERROR: No es posible obtener TRACK LIST", error)
+      const urlIndicadores = "https://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=2ee7569785c94e3b063786ac07345e13&artist="+grupo+"&album="+nombre+"&format=json"
+      console.log (nombre, grupo)
+      const respTrackList = await fetch(urlIndicadores);
+      try {
+        const dataTrackList = await respTrackList.json();
+        setTrackList(dataTrackList.album.tracks.track)
+        console.log (dataTrackList)
+        // window.scrollTo(0, 0) // Revisar si debo hacer esto
+      }
+      catch (error) 
+      {
+        console.log ("ERROR: No es posible obtener TRACK LIST", error)
+      }
+    } else {
+      setTieneDescripcion (true)
+      setDescripcion (productos[index].descripcion)
     }
   }
 
@@ -131,12 +144,18 @@ export const CatalogoComprar = ({ nameState, updateNameState, userName, updateUs
           { (productos[index].stock == 0) 
             // Enviar mensaje de NO STOCK
           }
-          <br/><h4>Lista de Canciones</h4> <br/>
+          {!tieneDescripcion && <div>
+            <br/><h4>Lista de Canciones</h4> <br/>
             {trackList.map((track, index) => (
               <div key={index}> 
                 - {track.name} 
               </div>
             ))}
+          </div>}
+          {tieneDescripcion && <div>
+            <br/><h4>Descripción</h4> <br/>
+            {descripcion}
+          </div>}
         </div> <br/>
         </div>
 
