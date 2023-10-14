@@ -12,7 +12,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const [pagarPaypal, setPagarPaypal] = useState (0)
 
-    const [state, dispatch] = useContext (ProductContext)
+    const [state,] = useContext (ProductContext)
     const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
     console.log ('>>> PAGAR_CARRO (inicio): ', productos)
 
@@ -32,12 +32,13 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [estadoEnvio, setEstadoEnvio] = useState (false)
     const [enviaADomicilio, setenviaADomicilio] = useState (false)
     const [retiraEnTienda,  setRetiraEnTienda]  = useState (false)
-    const [formularioCompleto, setFormularioCompleto] = useState (false)
 
     const initialUpdateForm_user = {
         nombre:   '',
         apellido: '',
+        rut:      '',
         email:    '',
+        password: '',
         direccion: '',
         comuna: '',
         ciudad: '',
@@ -45,6 +46,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         telefono: '',
     }
     const [updateForm_user, setUpdateForm_user] = useState (initialUpdateForm_user)
+
 
     const hacerReservas = async () => {
 
@@ -78,31 +80,21 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                     const nuevoStock     = data[0].stock  - cantidadCarro
                     const nuevaVenta     = data[0].ventas + cantidadCarro
 
-                    if (nuevoStock >= 0) 
-                    {
-                        const newProductos = [...productos]
-                        const objeto  = newProductos[index]
+                    if (nuevoStock >= 0) {
+                        const objeto  = productos[index]
+                        console.log ("OJO 1", objeto)
                         objeto.stock  = nuevoStock
                         objeto.ventas = nuevaVenta
-                        productosConStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
-
-                        newProductos[index] = objeto
-                        dispatch ({ type: 'OBTENER_PRODUCTO', payload: newProductos })
-                        console.log ('Modificando PRODUCTOS PAGAR CARRO', newProductos)
-
-                        sessionStorage.setItem ('ultimaRuta', '/pagarcarro' )
-                        sessionStorage.setItem ('carroConStock', JSON.stringify(productosConStock))
-
+                        console.log ("OJO 2", objeto)
                         try 
                         {
                             await axios.put ( urlProduct, objeto)
+                            productosConStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
                             setEstadoProductosCon (true)
                         } catch (error) {
                             console.log ('Error en put', error)
                         }
-                    } 
-                    else 
-                    {
+                    } else {
                         productosSinStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
                         setEstadoProductosSin (true)
                     }
@@ -110,12 +102,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                     console.log ('Error en get', error)
                 }
             }
-
-            if (estadoProductosCon) {   // Debo asegurarme que cada componente al que vaya después de estar aquí debe liberar productos reservados
+            if (setEstadoProductosCon) {   // Debo asegurarme que cada componente al que vaya después de estar aquí debe liberar productos reservados
                 sessionStorage.setItem ('ultimaRuta', '/pagarcarro' )
                 sessionStorage.setItem ('carroConStock', JSON.stringify(productosConStock))
             }
-
             setGlobalProductosConStock ([...productosConStock])
             console.log ("Productos con Stock ", productosConStock)
             setGlobalProductosSinStock ([...productosSinStock])
@@ -127,7 +117,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     useEffect (() => {
         hacerReservas ()
     },[])
-
 
 
     const calculaValores = () => {
@@ -160,7 +149,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     useEffect (() => {
         calculaValores ()
-    },[updateForm_user, ])
+    },[updateForm_user])
 
 
     const handleupdateFormChange = (event) => {
@@ -173,7 +162,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const envioDomicilio = (event) => {
         event.preventDefault()
-
         if (!enviaADomicilio) {
             const transporte = 3990
             setGastosDeEnvio (transporte)
@@ -182,13 +170,11 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setenviaADomicilio (true)
         setRetiraEnTienda (false)
-        setEstadoEnvio (false)
     }
 
 
     const retiraTienda = (event) => {
         event.preventDefault()
-
         if (!retiraEnTienda) {
             const transporte = 0
             setGastosDeEnvio (transporte)
@@ -197,43 +183,15 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setRetiraEnTienda (true)
         setenviaADomicilio (false)
-        setEstadoEnvio (false)
     }
 
 
     const irAPagar = (event) => {
         event.preventDefault()
-
-        setFormularioCompleto (false)
-        if (enviaADomicilio) {
-            console.log ("Revisando campos Domicilio ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.direccion == "" || updateForm_user.comuna == "" || updateForm_user.ciudad == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
-
-        if (retiraEnTienda) {
-            console.log ("Revisando campos Tienda ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
+        // Debe revisar que todos los campos están OK, es decit, que todos los campos estén!!
 
         if (enviaADomicilio || retiraEnTienda) {
-            if (formularioCompleto) {
-                setEstadoEnvio (true)
-                console.log (JSON.stringify( { updateForm_user }))
-                sessionStorage.setItem('formulario', JSON.stringify(updateForm_user));
-            }
+            setEstadoEnvio (true)
         } else {
             alert ('Debe seleccionar una opcion: envio o retiro')
         }
@@ -274,63 +232,6 @@ return (
                         <br/><br/><br/>
                     </div>
 
-                    {!enviaADomicilio && !retiraEnTienda && <div style={{height: "373px"}}>
-                    </div>}
-
-                    {retiraEnTienda &&
-                    <form>
-                        <div className="row g-1">
-                            <div className="col-sm">
-                                <label  form="nombre" className="form-label">Nombre</label>
-                                <input  type="text"
-                                        name="nombre"
-                                        className="form-control" 
-                                        id="nombre"  
-                                        aria-label="nombre"
-                                        value={updateForm_user.nombre}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                            <div className="col-sm">
-                                <label  form="apellido" className="form-label">Apellido</label>
-                                <input  type="text" 
-                                        name="apellido"
-                                        className="form-control" 
-                                        id="apellido"  
-                                        aria-label="apellido"
-                                        value={updateForm_user.apellido}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                        </div>
-                        <div className="row g-1">
-                            <div className="col-sm">
-                                <label  form="email" className="form-label">eMail</label>
-                                <input  type="email" 
-                                        name="email"
-                                        className="form-control" 
-                                        id="email" 
-                                        value={updateForm_user.email}
-                                        onChange={handleupdateFormChange} 
-                                        required />
-                            </div>
-                            <div className="col-sm">
-                                <label  form="telefono" className="form-label">Teléfono</label>
-                                <input  type="text" 
-                                        name="telefono" 
-                                        className="form-control" 
-                                        id="telefono"  
-                                        value={updateForm_user.telefono}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                            <div style={{height: "229px"}}>
-                            </div>
-                        </div>
-                    </form>}
-
-
-                    {enviaADomicilio &&
                     <form>
                         <div className="row g-1">
                             <div className="col-sm">
@@ -355,25 +256,13 @@ return (
                             </div>
 
                             <div className="row g-1">
-                            <div className="col-sm">
-                                    <label  form="email" className="form-label">eMail</label>
-                                    <input  type="email" 
-                                            name="email"
-                                            className="form-control" 
-                                            id="email" 
-                                            value={updateForm_user.email}
-                                            onChange={handleupdateFormChange} 
-                                            required />
-                                </div>
-                                <div className="col-sm">
-                                    <label form="direccion" className="form-label">Dirección (calle y número)</label>
-                                    <input  type="text" 
-                                            name="direccion"
-                                            className="form-control" 
-                                            id="direccion"
-                                            value={updateForm_user.direccion}
-                                            onChange={handleupdateFormChange}  />
-                                </div>
+                                <label form="direccion" className="form-label">Dirección (calle y número)</label>
+                                <input  type="text" 
+                                        name="direccion"
+                                        className="form-control" 
+                                        id="direccion"
+                                        value={updateForm_user.direccion}
+                                        onChange={handleupdateFormChange}  />
                             </div>
 
                             <div className="row g-1">
@@ -412,9 +301,7 @@ return (
                                 </div>
                             </div>
                         </div>
-                    </form>}
-
-
+                    </form>
 
                     <div className="row">
                         <div className="col col-md-auto" >
@@ -475,6 +362,7 @@ return (
                 </div> 
                 <br/> 
                 
+
                 <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black", textAlign: "center"}}>
                     <div className="container text-center">
                         <br/>
@@ -504,7 +392,6 @@ return (
             </div>
         </div>
         <br/>
-
     </div>
 )
 }

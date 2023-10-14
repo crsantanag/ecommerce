@@ -7,8 +7,12 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
 
   const navigate = useNavigate();
 
-  const [esperaModal, setEsperaModal] = useState (true)
+  const [esperaModal, setEsperaModal] = useState (false)
   const [exito, setExito]   = useState (false)
+
+  const [titulo, setTitulo] = useState ("")
+  const [mensaje, setMensaje] = useState ("")
+  const [cierre, setCierre] = useState ("")
 
   const [errorDatos, setErrorDatos] = useState (false)
   const [errorRutEmail, setErrorRutEmail] = useState (false)
@@ -41,35 +45,49 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
   const onSubmitCreateForm = async (event) => {
     event.preventDefault();
 
-    setEsperaModal (true)
+    setEsperaModal (false)
     setExito (false)
     setErrorDatos (false)
     setErrorRutEmail (false)
     setErrorServer (false)
 
-    const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
-    try {
-      const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
-      console.log (data)
-      setExito (true)
+    if (createForm.nombre == "" || createForm.apellido == "" || createForm.direccion == "" || createForm.comuna == "" || createForm.ciudad == "" || createForm.telefono == ""  ) {
+      setErrorDatos (true)
+      setTitulo  ("Error!")
+      setMensaje ("Hay campos vacios, ingrese todos los datos")
+      setCierre  ("Salir sin crear usuario")
+    } else 
+    {
+      setEsperaModal (true)
+      setTitulo ("Creando usuario  ...")
+      const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
+      try {
+        const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
+        console.log (data)
+        setExito (true)
+        setMensaje ("Usuario exitosamente creado: ")
+      }
+      catch (error) {
+        console.log ('Codigo : ',  error.response.status)
+        console.log ('Mensaje : ', error.response.data.message)
+        setTitulo ("Error!")
+        const status  = error.response.status
+        if (status == 400) {
+          setErrorDatos (true)
+          setMensaje ("Hay campos vacios, ingrese todos los datos")
+        }
+        if (status == 410) {
+          setErrorRutEmail (true)
+          setMensaje ("Rut existe")
+        }
+        if (status == 500) {
+          setErrorServer (true)
+          setMensaje ("eMail existe")
+        }
+        setExito (false)
+      }
+      setEsperaModal (false)
     }
-    catch (error) {
-      console.log ('Codigo : ',  error.response.status)
-      console.log ('Mensaje : ', error.response.data.message)
-
-      const status  = error.response.status
-      if (status == 400) {
-         setErrorDatos (true)
-      }
-      if (status == 410) {
-        setErrorRutEmail (true)
-      }
-      if (status == 500) {
-        setErrorServer (true)
-      }
-      setExito (false)
-    }
-    setEsperaModal (false)
   }
 
 
@@ -217,11 +235,11 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
       </form>
 
               {/* <!-- Modal --> */}
-              <div className="modal fade" id="exampleModal"  tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal fade" id="exampleModal"  tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="exampleModalLabel">Creando usuario  ... </h1>
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">{titulo} </h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
@@ -232,24 +250,24 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
                         }
                         {!esperaModal && exito &&
                             <div>
-                                Usuario {createForm.nombre} {createForm.apellido} ha sido creado
+                                {mensaje} {createForm.nombre} {createForm.apellido} 
                             </div>
                         }
 
                         {!esperaModal && errorDatos &&
                             <div>
-                                Error: Debe ingresar todos los datos solicitados
+                                Debe ingresar todos los datos solicitados
                             </div>
                         }
                         {!esperaModal && errorRutEmail &&
                             <div>
-                                Error: Rut ya existe
+                                Rut ya existe
                             </div>
                         }
 
                         {!esperaModal && errorServer &&
                             <div>
-                                Error: Mail ya existe
+                                Mail ya existe
                             </div>
                         }
 

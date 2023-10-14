@@ -32,12 +32,13 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [estadoEnvio, setEstadoEnvio] = useState (false)
     const [enviaADomicilio, setenviaADomicilio] = useState (false)
     const [retiraEnTienda,  setRetiraEnTienda]  = useState (false)
-    const [formularioCompleto, setFormularioCompleto] = useState (false)
 
     const initialUpdateForm_user = {
         nombre:   '',
         apellido: '',
+        rut:      '',
         email:    '',
+        password: '',
         direccion: '',
         comuna: '',
         ciudad: '',
@@ -182,7 +183,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setenviaADomicilio (true)
         setRetiraEnTienda (false)
-        setEstadoEnvio (false)
     }
 
 
@@ -197,45 +197,18 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setRetiraEnTienda (true)
         setenviaADomicilio (false)
-        setEstadoEnvio (false)
     }
 
 
     const irAPagar = (event) => {
         event.preventDefault()
+        // Debe revisar que todos los campos están OK, es decit, que todos los campos estén!!
 
-        setFormularioCompleto (false)
-        if (enviaADomicilio) {
-            console.log ("Revisando campos Domicilio ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.direccion == "" || updateForm_user.comuna == "" || updateForm_user.ciudad == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
-
-        if (retiraEnTienda) {
-            console.log ("Revisando campos Tienda ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
 
         if (enviaADomicilio || retiraEnTienda) {
-            if (formularioCompleto) {
-                setEstadoEnvio (true)
-                console.log (JSON.stringify( { updateForm_user }))
-                sessionStorage.setItem('formulario', JSON.stringify(updateForm_user));
-            }
+            setEstadoEnvio (true)
         } else {
-            alert ('Debe seleccionar una opcion: envio o retiro')
+            // alert ('Debe seleccionar una opcion: envio o retiro')
         }
     }
 
@@ -419,7 +392,7 @@ return (
                     <div className="row">
                         <div className="col col-md-auto" >
                             <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}} onClick= { regresar }>Regresar sin comprar</button>
-                            {!estadoWait && !estadoProductosSin && <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }>Pagar</button>}
+                            {!estadoWait && !estadoProductosSin && <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} data-bs-toggle="modal" data-bs-target="#exampleModal" onClick= { irAPagar }>Pagar</button>}
                         </div>
                         <br/>
                     </div>
@@ -504,7 +477,6 @@ return (
             </div>
         </div>
         <br/>
-
     </div>
 )
 }

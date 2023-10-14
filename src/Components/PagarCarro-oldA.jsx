@@ -32,12 +32,13 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const [estadoEnvio, setEstadoEnvio] = useState (false)
     const [enviaADomicilio, setenviaADomicilio] = useState (false)
     const [retiraEnTienda,  setRetiraEnTienda]  = useState (false)
-    const [formularioCompleto, setFormularioCompleto] = useState (false)
 
     const initialUpdateForm_user = {
         nombre:   '',
         apellido: '',
+        rut:      '',
         email:    '',
+        password: '',
         direccion: '',
         comuna: '',
         ciudad: '',
@@ -182,7 +183,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setenviaADomicilio (true)
         setRetiraEnTienda (false)
-        setEstadoEnvio (false)
     }
 
 
@@ -197,45 +197,16 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         }
         setRetiraEnTienda (true)
         setenviaADomicilio (false)
-        setEstadoEnvio (false)
     }
 
 
     const irAPagar = (event) => {
         event.preventDefault()
-
-        setFormularioCompleto (false)
-        if (enviaADomicilio) {
-            console.log ("Revisando campos Domicilio ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.direccion == "" || updateForm_user.comuna == "" || updateForm_user.ciudad == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
-
-        if (retiraEnTienda) {
-            console.log ("Revisando campos Tienda ", updateForm_user)
-            if (updateForm_user.nombre == "" || updateForm_user.apellido == "" || updateForm_user.email == "" ||
-                updateForm_user.telefono == "") {
-                alert ("Debe ingresar todos los datos")
-                }
-            else {
-                setFormularioCompleto (true)
-            }
-        }
-
+        // Debe revisar que todos los campos están OK, es decit, que todos los campos estén!!
         if (enviaADomicilio || retiraEnTienda) {
-            if (formularioCompleto) {
-                setEstadoEnvio (true)
-                console.log (JSON.stringify( { updateForm_user }))
-                sessionStorage.setItem('formulario', JSON.stringify(updateForm_user));
-            }
+            setEstadoEnvio (true)
         } else {
-            alert ('Debe seleccionar una opcion: envio o retiro')
+            // alert ('Debe seleccionar una opcion: envio o retiro')
         }
     }
 
@@ -274,62 +245,6 @@ return (
                         <br/><br/><br/>
                     </div>
 
-                    {!enviaADomicilio && !retiraEnTienda && <div style={{height: "373px"}}>
-                    </div>}
-
-                    {retiraEnTienda &&
-                    <form>
-                        <div className="row g-1">
-                            <div className="col-sm">
-                                <label  form="nombre" className="form-label">Nombre</label>
-                                <input  type="text"
-                                        name="nombre"
-                                        className="form-control" 
-                                        id="nombre"  
-                                        aria-label="nombre"
-                                        value={updateForm_user.nombre}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                            <div className="col-sm">
-                                <label  form="apellido" className="form-label">Apellido</label>
-                                <input  type="text" 
-                                        name="apellido"
-                                        className="form-control" 
-                                        id="apellido"  
-                                        aria-label="apellido"
-                                        value={updateForm_user.apellido}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                        </div>
-                        <div className="row g-1">
-                            <div className="col-sm">
-                                <label  form="email" className="form-label">eMail</label>
-                                <input  type="email" 
-                                        name="email"
-                                        className="form-control" 
-                                        id="email" 
-                                        value={updateForm_user.email}
-                                        onChange={handleupdateFormChange} 
-                                        required />
-                            </div>
-                            <div className="col-sm">
-                                <label  form="telefono" className="form-label">Teléfono</label>
-                                <input  type="text" 
-                                        name="telefono" 
-                                        className="form-control" 
-                                        id="telefono"  
-                                        value={updateForm_user.telefono}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
-                            <div style={{height: "229px"}}>
-                            </div>
-                        </div>
-                    </form>}
-
-
                     {enviaADomicilio &&
                     <form>
                         <div className="row g-1">
@@ -355,25 +270,13 @@ return (
                             </div>
 
                             <div className="row g-1">
-                            <div className="col-sm">
-                                    <label  form="email" className="form-label">eMail</label>
-                                    <input  type="email" 
-                                            name="email"
-                                            className="form-control" 
-                                            id="email" 
-                                            value={updateForm_user.email}
-                                            onChange={handleupdateFormChange} 
-                                            required />
-                                </div>
-                                <div className="col-sm">
-                                    <label form="direccion" className="form-label">Dirección (calle y número)</label>
-                                    <input  type="text" 
-                                            name="direccion"
-                                            className="form-control" 
-                                            id="direccion"
-                                            value={updateForm_user.direccion}
-                                            onChange={handleupdateFormChange}  />
-                                </div>
+                                <label form="direccion" className="form-label">Dirección (calle y número)</label>
+                                <input  type="text" 
+                                        name="direccion"
+                                        className="form-control" 
+                                        id="direccion"
+                                        value={updateForm_user.direccion}
+                                        onChange={handleupdateFormChange}  />
                             </div>
 
                             <div className="row g-1">
@@ -413,8 +316,6 @@ return (
                             </div>
                         </div>
                     </form>}
-
-
 
                     <div className="row">
                         <div className="col col-md-auto" >
@@ -504,7 +405,6 @@ return (
             </div>
         </div>
         <br/>
-
     </div>
 )
 }

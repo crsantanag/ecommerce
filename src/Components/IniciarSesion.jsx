@@ -45,10 +45,10 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
             const { data } = await axios.post (urlLogin, loginForm)
 
             const tokenString = JSON.stringify (data)
+            localStorage.setItem ('token', tokenString)
+
             const  decoded = jwt_decode (tokenString);
             setNombre (decoded.data.nombre + ' ' + decoded.data.apellido)
-
-            localStorage.setItem ('token', tokenString)
 
             setEspera (false)
             setExito  (true)

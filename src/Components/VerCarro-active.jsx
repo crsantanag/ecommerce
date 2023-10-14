@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProductContext } from '../Context/productContext';
-import { AnulaReservas } from './AnulaReservas';
 import axios from 'axios';
 import './VerCarro.css'
 
@@ -15,45 +14,83 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     const [totalArticulos, setTotalArticulos] = useState (0)
     const [totalPesos, setTotalPesos] = useState (0)
     const [totalCarro, setTotalCarro] = useState ([])
+    const [productos, setProductos] = useState ([])
 
     const rutaActual   = '/vercarro'
     sessionStorage.setItem ('rutaActual', rutaActual)
 
     const [state, dispatch] = useContext (ProductContext)
-    const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+    //const productosOrden = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+    //setProductos (productosOrden)
+    
+    console.log ('>>> VER carro - get Productos ', productos)
 
-    const getAllProducts = async () => {
-        const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
-        dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
-        console.log ('VER_CARRO - dispatch', data)
-        // setProductos(data)
-    }
+    const eliminaReservas = async () => {
+        console.log ('>>> Eliminando reservas (desde VER CARRO)')
 
-    const cargaProductos = () => {
-        if (state.product.length == 0) {
-            getAllProducts()
-            console.log ('Haciendo GET') 
+        if (sessionStorage.getItem('carroConStock') !== null) {
+            const carroCompras = JSON.parse(sessionStorage.getItem('carroConStock'))
+
+            sessionStorage.removeItem ('carroConStock')
+            sessionStorage.removeItem ('ultimaRuta')
+
+            for (let i = 0; i < carroCompras.length; i++) {
+
+                const index         = carroCompras[i].codigo - 1
+                const codigoString  = carroCompras[i].codigo.toString()
+                const cantidadCarro = carroCompras[i].cantidad
+
+                const urlProduct = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products/' + codigoString
+
+                try 
+                {
+                    const { data } = await axios.get (urlProduct)
+
+                    const nuevoStock     = data[0].stock  + cantidadCarro
+                    const nuevaVenta     = data[0].ventas - cantidadCarro
+
+                    const newProductos = [...productos]
+                    const objeto  = newProductos[index]
+                    objeto.stock  = nuevoStock
+                    objeto.ventas = nuevaVenta
+                    newProductos[index] = objeto
+
+                    dispatch ({ type: 'OBTENER_PRODUCTO', payload: newProductos })
+                    setProductos ([...newProductos])
+                    console.log ('Modificando PRODUCTOS ELIMINA RESERVAS', newProductos)
+
+                    try 
+                    {
+                        await axios.put ( urlProduct, objeto)
+                    } 
+                    catch (error) 
+                    {
+                        console.log ('Error en put', error)
+                    }
+                } 
+                catch (error) 
+                {
+                    console.log ('Error en get', error)
+                }
+            }
+        } 
+        else 
+        {
+            console.log ('>>> No hay reservas para eliminar')
         }
     }
 
     useEffect (() => {
-        cargaProductos ()
+        const productosOrden = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+        setProductos (productosOrden)
+        eliminaReservas()
     },[])
 
 
-    const consolidaCarro = () => {
-        if (sessionStorage.getItem('ultimaRuta') !== null) 
-        {
-            const ultimaRuta = sessionStorage.getItem ('ultimaRuta')
-            if (ultimaRuta == '/pagarcarro') {
-                sessionStorage.removeItem('ultimaRuta')
-                AnulaReservas ()
-            }
-        }
-        
-        const productosAux = [...productos]
-        console.log (productosAux)
 
+    const consolidaCarro = () => {
+        const productosOrden = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+        setProductos (productosOrden)
         if (localStorage.getItem('carroCompras') !== null) 
         {
             let carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
@@ -82,7 +119,7 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
             carroCompras = totalCarroAux.map (articulo => ({ codigo: articulo.codigo, cantidad: articulo.cantidad }))
             localStorage.setItem('carroCompras', JSON.stringify(carroCompras))
             setTotalCarro (totalCarroAux)
-        
+
         }
     }
 
@@ -206,14 +243,14 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
         <div className="container text-center" >
             <div className='row' style={{marginLeft: "0px", marginRight: "0px"}} >
                 {totalCarro.map ((celda, index) => (
-                <div className="catalogo_carro" style={{backgroundColor: "white"}} key={index}>
+                <div className="catalogo_carro" style={{backgroundColor: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}} key={index}>
                     <img data-id={index} src={productos[celda.codigo-1].url} width={100}> 
                     </img> <br/> <br/>
                     <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "14px"}} onClick={(event) => restaUno (event, index)}> - </button>
                     &nbsp;&nbsp;&nbsp;Cantidad &nbsp;&nbsp;&nbsp;
                     <button className= 'compraCD_boton_restasuma' style={{ width: "40px", fontSize: "14px"}} onClick={(event) => sumarUno (event, index)}> + </button> <br/>
-                    {productos[celda.codigo-1].grupo}  <br/>
                     {productos[celda.codigo-1].nombre} <br/>
+                    {productos[celda.codigo-1].grupo}  <br/>
                     ${productos[celda.codigo-1].precio.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )} x {celda.cantidad} = ${celda.subTotal.toLocaleString('es-ES',{style: 'decimal',minimumFractionDigits: 0, maximumFractionDigits: 0} )} &nbsp;&nbsp;
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16" style={{ cursor: 'pointer' }} onClick={(event) => eliminaProduct (event, index)}>
                         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>

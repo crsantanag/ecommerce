@@ -35,7 +35,7 @@ export const PaypalButton = ({invoice, totalValue}) => {
       }}
 
       onCancel = {(data) => {
-        alert ('Pago cancelado por el usuario')
+
       }}
       
     />

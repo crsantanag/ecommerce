@@ -1,15 +1,18 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useContext } from 'react'
 import { UserContext } from '../Context/userContext'
+import jwt_decode from "jwt-decode"
 import axios from 'axios'
-import jwtDecode from "jwt-decode"
 import './MiPerfil.css'
 
 export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
   const navigate = useNavigate();
 
-  const [esperaModal, setEsperaModal] = useState (true)
+  const [esperaModal, setEsperaModal] = useState (false)
+  const [titulo, setTitulo] = useState ("")
+  const [mensaje, setMensaje] = useState ("")
+  const [cierre, setCierre] = useState ("")
 
   const initialUpdateForm = {
     nombre:   '',
@@ -26,11 +29,25 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
   
   const [updateForm, setUpdateForm] = useState (initialUpdateForm)
 
-  const data       = JSON.parse (localStorage.getItem ('token'))
-  const rut        = localStorage.getItem ('rut')
-  const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
+  //const data       = JSON.parse (localStorage.getItem ('token'))
+  //const rut        = localStorage.getItem ('rut')
+  //const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
-  const leerUsuario = async () => {
+  const [state, dispatch] = useContext (UserContext)
+ 
+  const token = state.token
+  console.log ("MIPERFIL - CONTEXT token: ",  token )
+
+  const leerToken = () => {
+    if (localStorage.getItem('token') !== null) {
+      const tokenString = localStorage.getItem('token')
+      const decoded = jwt_decode (tokenString)
+      setUpdateForm ({...decoded.data})
+    }
+  }
+
+{/*
+    const leerUsuario = async () => {
     try {
       const traeUsuario = await axios.get ( urlUsuario, { headers:  { authorization: data } } )
       console.log ('Leyó : ', traeUsuario)
@@ -42,17 +59,11 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
     catch (error) {
       console.log ('Salió por error', error)
     }
-  }
-
-  
-  const [state, dispatch] = useContext (UserContext)
-  console.log ("MIPERFIL - CONTEXT 1: ")
-  const token = state.token
-  console.log ("CATALOGO MOSTRAR - CONTEXT 2: ",  token )
-
+  } 
+*/}
 
   useEffect (() => {
-    leerUsuario ()
+    leerToken ()
   },[])
 
 
@@ -63,36 +74,55 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
                     ...updateForm, 
                     [keyForm]: valueForm
                 })
-    console.log (updateForm)
   }
 
 
   const onSubmitUpdateForm = async (event) => {
     event.preventDefault();
 
-    const data       = JSON.parse (localStorage.getItem ('token'))
+    const data = state.token
+    // const data       = JSON.parse (localStorage.getItem ('token'))
+    
     const rut        = localStorage.getItem ('rut')
     const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
 
+    if (updateForm.nombre == "" || updateForm.apellido == "" || updateForm.direccion == "" || updateForm.comuna == "" || updateForm.ciudad == "" || updateForm.telefono == ""  ) {
+      setTitulo  ("Error!")
+      setMensaje ("Hay campos vacios, ingrese todos los datos")
+      setCierre  ("Salir sin modificar")
+    } else {
+
+    setTitulo ("Actualizando datos ...")
     setEsperaModal (true)
+    
     try {
-      const actualizaUsuario = await axios.put ( urlUsuario, updateForm,  { headers:  { authorization: data } } )
+      console.log (updateForm)
+      const token       = await axios.put ( urlUsuario, updateForm,  { headers:  { authorization: data } } )
+      const tokenString = JSON.stringify (token.data)
+      localStorage.setItem ('token', tokenString)
+
       const nombreUsuario = updateForm.nombre
       updateUserName (nombreUsuario)
+      setMensaje ("Sus datos se han actualizado")
+      setCierre  ("Cerrar")
 
-      // hacer Dispatch
-      // dispatch ({ type:'LOGIN', payload: data})
+      //const { data } = await axios.post (urlLogin, loginForm)
+      //const tokenString = JSON.stringify (data)
+      //const  decoded = jwt_decode (tokenString);
+      //setNombre (decoded.data.nombre + ' ' + decoded.data.apellido)
+      //localStorage.setItem ('token', tokenString)
 
+
+      // Hago Dispatch
+      // dispatch ({ type:'LOGIN', payload: token})
 
     }
     catch (error) {
-      
       console.log ('Codigo : ',  error.response.status)
       console.log ('Mensaje : ', error.response.data.mesagge)
-
     }
     setEsperaModal (false)
-    // dispatch ({ type:'LOGIN', payload: data})
+    }
   }
 
 
@@ -136,7 +166,8 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
                     value={updateForm.apellido}
                     onChange={handleUpdateFormChange} />
           </div>
-          <div className="row g-1">
+
+{/*         <div className="row g-1">
             <div className="col-sm">
             <label  form="email" className="form-label">eMail</label>
             <input  type="email" 
@@ -157,7 +188,7 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
             </div>
           </div>
 
-{/*          <div className="row g-1">
+        <div className="row g-1">
           <div className="col-sm">
             <label  form="password" className="form-label">Password</label>
             <input  type="password" 
@@ -225,7 +256,7 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
             <div className="modal-dialog">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h1 className="modal-title fs-5" id="exampleModalLabel">Actualizando ... </h1>
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">{titulo}</h1>
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
@@ -236,7 +267,7 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
                         }
                         {!esperaModal  && 
                             <div>
-                                Sus datos se han actualizado
+                                {mensaje}
                             </div>
                         }
 
@@ -246,7 +277,7 @@ export const MiPerfil = ({ nameState, updateNameState, userName, updateUserName,
                                 className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" 
                                 data-bs-dismiss="modal"
                                 onClick= { validarClose } >
-                                Cerrar</button>
+                                {cierre}</button>
                     </div>
                 </div>
             </div>
