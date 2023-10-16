@@ -24,13 +24,14 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
     rut:      '',
     email:    '',
     password: '',
+    passwordAux: '',
     direccion: '',
     comuna: '',
     ciudad: '',
     region: '',
     telefono: '',
   }
-  
+
   const [createForm, setCreateForm] = useState (initialCreateForm)
   
   const handleCreateFormChange = (event) => {
@@ -45,48 +46,65 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
   const onSubmitCreateForm = async (event) => {
     event.preventDefault();
 
+    console.log (createForm)
     setEsperaModal (false)
     setExito (false)
     setErrorDatos (false)
     setErrorRutEmail (false)
     setErrorServer (false)
 
-    if (createForm.nombre == "" || createForm.apellido == "" || createForm.direccion == "" || createForm.comuna == "" || createForm.ciudad == "" || createForm.telefono == ""  ) {
+    if (  createForm.nombre == "" || createForm.apellido == "" || createForm.email== "" || createForm.rut == ""  ||
+          createForm.password == "" || createForm.passwordAux == "" ||
+          createForm.direccion == "" || createForm.comuna == "" || createForm.ciudad == "" || createForm.telefono == ""  ) 
+    {
+      console.log ("Campos en blanco")
       setErrorDatos (true)
       setTitulo  ("Error!")
       setMensaje ("Hay campos vacios, ingrese todos los datos")
       setCierre  ("Salir sin crear usuario")
-    } else 
+    } 
+    else 
     {
-      setEsperaModal (true)
-      setTitulo ("Creando usuario  ...")
-      const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
-      try {
-        const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
-        console.log (data)
-        setExito (true)
-        setMensaje ("Usuario exitosamente creado: ")
+      if ( createForm.password !== createForm.passwordAux ) 
+      {
+        console.log ("Password no coincide")
+        setErrorDatos (true)
+        setTitulo  ("Error!")
+        setMensaje ("Password no coincide")
+        setCierre  ("Salir sin crear usuario")
       }
-      catch (error) {
-        console.log ('Codigo : ',  error.response.status)
-        console.log ('Mensaje : ', error.response.data.message)
-        setTitulo ("Error!")
-        const status  = error.response.status
-        if (status == 400) {
-          setErrorDatos (true)
-          setMensaje ("Hay campos vacios, ingrese todos los datos")
+      else 
+      {
+        setEsperaModal (true)
+        setTitulo ("Creando usuario  ...")
+        const url = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users'
+        try {
+          const data = await axios.post(url, createForm, { headers: { "Content-Type": "application/json" } })
+          console.log (data)
+          setExito (true)
+          setMensaje ("Usuario exitosamente creado: ")
         }
-        if (status == 410) {
-          setErrorRutEmail (true)
-          setMensaje ("Rut existe")
+        catch (error) {
+          console.log ('Codigo : ',  error.response.status)
+          console.log ('Mensaje : ', error.response.data.message)
+          setTitulo ("Error!")
+          const status  = error.response.status
+          if (status == 400) {
+            setErrorDatos (true)
+            setMensaje ("Hay campos vacios, ingrese todos los datos")
+          }
+          if (status == 410) {
+            setErrorRutEmail (true)
+            setMensaje ("Rut existe")
+          }
+          if (status == 500) {
+            setErrorServer (true)
+            setMensaje ("eMail existe")
+          }
+          setExito (false)
         }
-        if (status == 500) {
-          setErrorServer (true)
-          setMensaje ("eMail existe")
-        }
-        setExito (false)
+        setEsperaModal (false)
       }
-      setEsperaModal (false)
     }
   }
 
@@ -169,11 +187,13 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
                     required />
           </div>
           <div className="col-sm">
-            <label form="password" className="form-label">Password (reingrese)</label>
+            <label form="passworAux" className="form-label">Password (reingrese)</label>
             <input  type="password" 
-                    name="password"
+                    name="passwordAux"
                     className="form-control" 
-                    id="inputPassword2"
+                    id="inputPasswordAux"
+                    value={createForm.passwordAux}
+                    onChange={handleCreateFormChange}
                     required />
           </div>
           </div>
@@ -256,7 +276,7 @@ export const CrearCuenta = ({ nameState, updateNameState, userName, updateUserNa
 
                         {!esperaModal && errorDatos &&
                             <div>
-                                Debe ingresar todos los datos solicitados
+                                {mensaje}
                             </div>
                         }
                         {!esperaModal && errorRutEmail &&
