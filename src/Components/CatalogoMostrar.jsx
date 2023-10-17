@@ -36,6 +36,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
 
   const [state, dispatch] = useContext (ProductContext)
   const [productos, setProductos] = useState([])
+  const [estatusProductos, setEstatusProductos] = useState (false)
 
   AnulaReservas()
   
@@ -131,9 +132,11 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
         updateNameState (true)
       }
       getAllProducts()
+      setEstatusProductos (productos.length !== 0)
     }
     else {
       setProductos (state.product)
+      setEstatusProductos (productos.length !== 0)
     }
     filtrarProductos()
     },[filtro, state, productos])
@@ -306,8 +309,9 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
 
   return (
     <div className='catalogo_mostrar'>
-      <br />
-      <div className="container text-center" >
+    <br />
+    {estatusProductos && <div>
+    <div className="container text-center" >
         <div className="row justify-content-md-center">
 
           <div className="col col-lg-4" style={{ display: 'flex', justifyContent: 'right' }}>
@@ -387,6 +391,13 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
         <button className= 'compraCD_boton_restasuma' onClick={ flechaDerecha }> + </button> <br/> <br/>
       </div>
       </div>
+      </div>}
+
+      {!estatusProductos && <div>
+        <h3> Espere unos segundos, render está durmiendo.</h3>
+        <h3> (le hemos enviado una señal para que despierte)</h3>
+        <h3> En breves instantes desplegaramenos los productos.</h3>
+      </div>}
 
       <br />
     </div>
