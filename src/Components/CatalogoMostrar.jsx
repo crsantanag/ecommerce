@@ -394,7 +394,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       </div>}
 
       {!estatusProductos && <div>
-        <h3> Espere unos segundos, render está durmiendo.</h3>
+        <h3> Estimado profesor, espere unos segundos ya que render está durmiendo.</h3>
         <h3> (le hemos enviado una señal para que despierte)</h3>
         <h3> En breves instantes desplegaramenos los productos.</h3>
       </div>}

@@ -36,23 +36,73 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
         }
     }
 
-    useEffect (() => {
-        cargaProductos ()
-    },[])
-
-
-    const consolidaCarro = () => {
+    const consolidaCarro = async () => {
         if (sessionStorage.getItem('ultimaRuta') !== null) 
         {
             const ultimaRuta = sessionStorage.getItem ('ultimaRuta')
             if (ultimaRuta == '/pagarcarro') {
                 sessionStorage.removeItem('ultimaRuta')
-                AnulaReservas ()
+
+
+ //--------------------------------------------------------
+                console.log ('VER CARRO: >>> Entrando a Anular Reservas (si hay)')
+                if (sessionStorage.getItem('carroConStock') !== null) {
+                    const carroCompras = JSON.parse(sessionStorage.getItem('carroConStock'))
+                    sessionStorage.removeItem ('ultimaRuta')
+                    sessionStorage.removeItem ('carroConStock')
+        
+                    for (let i = 0; i < carroCompras.length; i++) {
+        
+                        const index         = carroCompras[i].codigo - 1
+                        const codigoString  = carroCompras[i].codigo.toString()
+                        const cantidadCarro = carroCompras[i].cantidad
+        
+                        const urlProduct = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/products/' + codigoString
+        
+                        try 
+                        {
+                            const { data } = await axios.get (urlProduct)
+        
+                            const nuevoStock     = data[0].stock  + cantidadCarro
+                            const nuevaVenta     = data[0].ventas - cantidadCarro
+        
+                            const newProductos = [...productos]
+                            const objeto  = newProductos[index]
+                            objeto.stock  = nuevoStock
+                            objeto.ventas = nuevaVenta
+        
+                            newProductos[index] = objeto
+                            dispatch ({ type: 'OBTENER_PRODUCTO', payload: newProductos })
+                            console.log ('VER CARRO: >> Modificando PRODUCTOS ANULA RESERVAS', newProductos)
+        
+                            try 
+                            {
+                                await axios.put ( urlProduct, objeto)
+                            } 
+                            catch (error) 
+                            {
+                                console.log ('Error en put', error)
+                            }
+                        } 
+                        catch (error) 
+                        {
+                            console.log ('Error en get', error)
+                        }
+                    }
+                } 
+                else 
+                {
+                    console.log ('VER CARRO: >>> No hay reservas para eliminar')
+                }
+            //--------------------------------------------------------
+
+
+                // AnulaReservas ()
             }
         }
         
         const productosAux = [...productos]
-        console.log (productosAux)
+        console.log ("Ver Carro: ", productosAux)
 
         if (localStorage.getItem('carroCompras') !== null) 
         {
@@ -87,6 +137,7 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
     }
 
     useEffect (() => {
+        cargaProductos ()
         consolidaCarro ()
     },[])
 

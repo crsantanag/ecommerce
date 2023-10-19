@@ -10,11 +10,11 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
     const navigate = useNavigate() 
 
-    const [pagarPaypal, setPagarPaypal] = useState (0)
-
     const [state, dispatch] = useContext (ProductContext)
-    const productos = [...state.product].sort((a, b) => a.codigo - (b.codigo))
-    console.log ('>>> PAGAR_CARRO (inicio): ', productos)
+    const productoGetContext = [...state.product].sort((a, b) => a.codigo - (b.codigo))
+    const [productos, setProductos] = useState ([])
+    
+    const [pagarPaypal, setPagarPaypal] = useState (0)
 
     const [estadoProductosCon, setEstadoProductosCon] = useState (false)
     const [estadoProductosSin, setEstadoProductosSin] = useState (false)
@@ -46,17 +46,23 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     }
     const [updateForm_user, setUpdateForm_user] = useState (initialUpdateForm_user)
 
-    const hacerReservas = async () => {
 
-        if (localStorage.getItem('token') !== null) { // Al modificar perfil DEBO actualizar el token
-            const tokenString = localStorage.getItem('token')
-            const decoded = jwt_decode (tokenString)
-            setUpdateForm_user ({...decoded.data})
-        }
+    const hacerReservas = async () => {
+        setProductos (productoGetContext)
+        const newProductos = [...productoGetContext]
+        console.log ('>>> PAGAR_CARRO (inicio): ', productoGetContext)
 
         setEstadoProductosCon (false)
         setEstadoProductosSin (false)
         setEstadoWait (true)
+
+        if (localStorage.getItem('token') !== null) {
+            const tokenString = localStorage.getItem('token')
+            const decoded = jwt_decode (tokenString)
+            setUpdateForm_user ({...decoded.data})
+            console.log ('Leyó TOKEN   : ', decoded.data)
+            console.log ('Hizo setFORM : ', updateForm_user)
+        }
 
         if (localStorage.getItem('carroCompras') !== null) {
             const carroCompras = JSON.parse(localStorage.getItem('carroCompras'))
@@ -64,7 +70,6 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
             const productosSinStock = []
 
             for (let i = 0; i < carroCompras.length; i++) {
-                
                 const codigoString  = carroCompras[i].codigo.toString()
                 const cantidadCarro = carroCompras[i].cantidad
 
@@ -77,18 +82,24 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                     const productoStock  = data[0].stock
                     const nuevoStock     = data[0].stock  - cantidadCarro
                     const nuevaVenta     = data[0].ventas + cantidadCarro
-
+                    console.log (productoCodigo, productoStock, nuevoStock, nuevaVenta) 
                     if (nuevoStock >= 0) 
                     {
-                        const newProductos = [...productos]
+                        
+                        console.log ('Index : ', index)
+                        console.log
                         const objeto  = newProductos[index]
+                        console.log ('Objeto : ', objeto)
                         objeto.stock  = nuevoStock
                         objeto.ventas = nuevaVenta
                         productosConStock.push ({"codigo": productoCodigo, "cantidad": cantidadCarro, "stock": productoStock})
 
                         newProductos[index] = objeto
+                        setProductos (newProductos)
+
                         dispatch ({ type: 'OBTENER_PRODUCTO', payload: newProductos })
-                        console.log ('Modificando PRODUCTOS PAGAR CARRO', newProductos)
+                        console.log ('Dispatch PRODUCTOS PAGAR CARRO', newProductos)
+                        console.log ('Dispatch PRODUCTOS PAGAR CARRO', productos)
 
                         sessionStorage.setItem ('ultimaRuta', '/pagarcarro' )
                         sessionStorage.setItem ('carroConStock', JSON.stringify(productosConStock))
@@ -107,7 +118,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
                         setEstadoProductosSin (true)
                     }
                 } catch (error) {
-                    console.log ('Error en get', error)
+                    console.log ('Error en get : ', error)
                 }
             }
 
@@ -129,38 +140,39 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     },[])
 
 
-
     const calculaValores = () => {
-        let suma = 0
-        const carroCompras = JSON.parse(localStorage.getItem('carroCompras'));
+        if (productos.length !== 0) {
+            let suma = 0
+            const carroCompras = JSON.parse(localStorage.getItem('carroCompras'));
 
-        for (let i = 0; i < carroCompras.length; i++) {
-            const codigo   = parseInt(carroCompras[i].codigo)
-            const cantidad = parseInt(carroCompras[i].cantidad)
-            const precio   = productos[codigo-1].precio
-            const subTotal = cantidad * precio
-            suma = suma + subTotal
+            for (let i = 0; i < carroCompras.length; i++) {
+                const codigo   = parseInt(carroCompras[i].codigo)
+                const cantidad = parseInt(carroCompras[i].cantidad)
+                const precio   = productos[codigo-1].precio
+                const subTotal = cantidad * precio
+                suma = suma + subTotal
+            }
+
+            const pesos = suma
+            setTotalPesos (suma)
+            const neto = Math.round (pesos / 1.19)
+            setTotalNeto (neto)
+            const iva = Math.round (pesos - neto)
+            setTotalIVA  (iva)
+            const transporte = 0
+            setGastosDeEnvio (transporte)
+            const grandTotal = pesos + gastosDeEnvio
+            setTotalTotal (grandTotal)
+
+            const totalValueAux = (grandTotal / 900)
+            const totalValueRnd = parseFloat(totalValueAux.toFixed(2))
+            setPagarPaypal (totalValueRnd)
         }
-
-        const pesos = suma
-        setTotalPesos (suma)
-        const neto = Math.round (pesos / 1.19)
-        setTotalNeto (neto)
-        const iva = Math.round (pesos - neto)
-        setTotalIVA  (iva)
-        const transporte = 0
-        setGastosDeEnvio (transporte)
-        const grandTotal = pesos + gastosDeEnvio
-        setTotalTotal (grandTotal)
-
-        const totalValueAux = (grandTotal / 900)
-        const totalValueRnd = parseFloat(totalValueAux.toFixed(2))
-        setPagarPaypal (totalValueRnd)
     }
 
     useEffect (() => {
         calculaValores ()
-    },[updateForm_user, ])
+    },[productos])
 
 
     const handleupdateFormChange = (event) => {
@@ -258,6 +270,84 @@ return (
     <div className="pagar_carro" >
         <br/>
         <div className="row g-2">
+
+
+        <br/><br/>
+            <div className="contenedor_650">
+            <div className='container-md'>
+                <br/>
+
+                <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center", height: "150px"}}>
+                
+                    {estadoWait &&  
+                    <div>
+                        <h4>Verificando stock ... </h4>
+                        <div className="spinner-border" role="status">
+                            <span className="visually-hidden"></span>
+                        </div>
+                    </div>
+                    }
+
+                    {!estadoWait && !estadoProductosSin && 
+                    <div> 
+                        <br/>
+                        <h4>Sus  productos  están  reservados</h4>
+                        <h5>(tiene 15 minutos para realizar el pago de éstos)</h5>
+                        <br/>
+                    </div>
+                    }
+
+                    {!estadoWait && estadoProductosSin && <h5>
+                    Producto(s) sin stock suficiente <br/> <br/>
+                    <div style={{textAlign: "left"}}> 
+                    <h6>
+                    {globalProductosSinStock.map ((celda, index) => (
+                        <div  key={index}> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16" style={{ cursor: 'pointer' }} onClick={(event) => eliminaProduct (event, index)}>
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                            </svg>&nbsp;&nbsp;&nbsp;
+                            {productos[celda.codigo-1].nombre} - {productos[celda.codigo-1].grupo} (stock: {celda.stock})
+                        </div>
+                        ))
+                    } 
+                    </h6>
+                    </div>
+                    </h5>
+                    }
+
+                </div> 
+                <br/> 
+                
+                <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black", textAlign: "center"}}>
+                    <div className="container text-center">
+                        <br/>
+                        <div className="row">
+                            <div className="col col-md-auto" style={{textAlign: "right", width: "300px"}}>
+                                <h4>Neto</h4>
+                                <h4>IVA</h4>
+                                <h4>SubTotal</h4>
+                                <h4>Gastos de Envío</h4>
+                                <h4>Total</h4>
+                            </div>
+                            <div className="col col-md-auto" style={{textAlign: "right", width: "150px"}}>
+                                <h4>$ {totalNeto.toLocaleString('es-CL', {style: 'decimal'})} </h4>
+                                <h4>$ {totalIVA.toLocaleString('es-Cl',  {style: 'decimal'})} </h4>
+                                <h4>$ {totalPesos.toLocaleString('es-CL',{style: 'decimal'})} </h4>
+                                <h4>$ {gastosDeEnvio.toLocaleString('es-CL',{style: 'decimal'})} </h4>
+                                <h4>$ {totalTotal.toLocaleString('es-CL',{style: 'decimal'})} </h4>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                </div>
+                <br/>
+
+                { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
+            </div>
+            </div>
+
+
             <br/>
             <div className="contenedor_650">
                 <div className='container-md'>
@@ -328,7 +418,6 @@ return (
                             </div>
                         </div>
                     </form>}
-
 
                     {enviaADomicilio &&
                     <form>
@@ -414,8 +503,6 @@ return (
                         </div>
                     </form>}
 
-
-
                     <div className="row">
                         <div className="col col-md-auto" >
                             <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}} onClick= { regresar }>Regresar sin comprar</button>
@@ -427,84 +514,9 @@ return (
                 </div>
             </div>
 
-            <br/><br/>
-            <div className="contenedor_650">
-            <div className='container-md'>
-                <br/>
 
-                <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center", height: "150px"}}>
-                
-                    {estadoWait &&  
-                    <div>
-                        <h4>Verificando stock ... </h4>
-                        <div className="spinner-border" role="status">
-                            <span className="visually-hidden"></span>
-                        </div>
-                    </div>
-                    }
-
-                    {!estadoWait && !estadoProductosSin && 
-                    <div> 
-                        <br/>
-                        <h4>Sus  productos  están  reservados</h4>
-                        <h5>(tiene 15 minutos para realizar el pago de éstos,</h5>
-                        <h5>pasado ese tiempo los productos serán liberados)</h5>
-                        <br/>
-                    </div>
-                    }
-
-                    {!estadoWait && estadoProductosSin && <h5>
-                    Producto(s) sin stock suficiente <br/> <br/>
-                    <div style={{textAlign: "left"}}> 
-                    <h6>
-                    {globalProductosSinStock.map ((celda, index) => (
-                        <div  key={index}> 
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16" style={{ cursor: 'pointer' }} onClick={(event) => eliminaProduct (event, index)}>
-                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
-                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
-                            </svg>&nbsp;&nbsp;&nbsp;
-                            {productos[celda.codigo-1].nombre} - {productos[celda.codigo-1].grupo} (stock: {celda.stock})
-                        </div>
-                        ))
-                    } 
-                    </h6>
-                    </div>
-                    </h5>
-                    }
-
-                </div> 
-                <br/> 
-                
-                <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black", textAlign: "center"}}>
-                    <div className="container text-center">
-                        <br/>
-                        <div className="row">
-                            <div className="col col-md-auto" style={{textAlign: "right", width: "300px"}}>
-                                <h4>Neto</h4>
-                                <h4>IVA</h4>
-                                <h4>SubTotal</h4>
-                                <h4>Gastos de Envío</h4>
-                                <h4>Total</h4>
-                            </div>
-                            <div className="col col-md-auto" style={{textAlign: "right", width: "150px"}}>
-                                <h4>$ {totalNeto.toLocaleString('es-CL', {style: 'decimal'})} </h4>
-                                <h4>$ {totalIVA.toLocaleString('es-Cl',  {style: 'decimal'})} </h4>
-                                <h4>$ {totalPesos.toLocaleString('es-CL',{style: 'decimal'})} </h4>
-                                <h4>$ {gastosDeEnvio.toLocaleString('es-CL',{style: 'decimal'})} </h4>
-                                <h4>$ {totalTotal.toLocaleString('es-CL',{style: 'decimal'})} </h4>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
-                </div>
-                <br/>
-        
-                { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
-            </div>
-            </div>
         </div>
         <br/>
-
     </div>
 )
 }

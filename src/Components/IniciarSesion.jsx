@@ -60,12 +60,7 @@ export const IniciarSesion = ({ nameState, updateNameState, userName, updateUser
 
             const rut = decoded.data.rut
             localStorage.setItem ('rut', rut)
-{/*
-            const urlUsuario = 'https://backend-proyecto-5-53yd.onrender.com/api/v1/users/' + rut
-            const traeUsuario = await axios.get ( urlUsuario, { headers: { authorization: data } } )
-            const datosUsuario = traeUsuario.data[0]
-            sessionStorage.setItem ('datosUsuario', datosUsuario)
-            console.log (traeUsuario.data[0]) */}
+
         }
         catch {
             setEspera (false)
