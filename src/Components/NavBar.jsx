@@ -2,13 +2,12 @@ import { NavLink } from 'react-router-dom'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { UserContext } from '../Context/userContext'
-import { AnulaReservas } from './AnulaReservas';
 
 export const NavBar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
   const navigate = useNavigate();
   const [buscar, setBuscar] = useState ('')
-  const [state, dispatch] = useContext (UserContext)
+  const [, dispatch] = useContext (UserContext)
 
   const location = useLocation()
   const rutaActual = location.pathname;
@@ -117,7 +116,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
               </li>
             </ul>
 
-            <form className="d-flex" role="search" style={{height: "45px", width: "400px", borderRadius: "5px"}} onSubmit={handleSubmit}>
+            <form className="d-flex" role="search" style={{height: "45px", width: "350px", borderRadius: "5px"}} onSubmit={handleSubmit}>
               <input  className="form-control me-1" 
                       type="search" 
                       placeholder="Buscar en el todo el catálogo" 
@@ -126,7 +125,7 @@ export const NavBar = ({ nameState, updateNameState, userName, updateUserName, c
                       value={ buscar } 
                       onChange={ handleChange }
               />
-              <button className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{height: "40px"}}
+              <button className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{height: "45px"}}
                       type="submit"
                       onClick = { validaBuscar }>
                       Buscar

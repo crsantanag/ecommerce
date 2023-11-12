@@ -43,7 +43,6 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
             if (ultimaRuta == '/pagarcarro') {
                 sessionStorage.removeItem('ultimaRuta')
 
-
  //--------------------------------------------------------
                 console.log ('VER CARRO: >>> Entrando a Anular Reservas (si hay)')
                 if (sessionStorage.getItem('carroConStock') !== null) {
@@ -95,7 +94,6 @@ export const VerCarro = ({ nameState, updateNameState, userName, updateUserName,
                     console.log ('VER CARRO: >>> No hay reservas para eliminar')
                 }
             //--------------------------------------------------------
-
 
                 // AnulaReservas ()
             }
