@@ -9,6 +9,8 @@ import './PagarCarro.css'
 export const PagarCarro = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
 
     const navigate = useNavigate() 
+    const screenWidth = window.innerWidth;
+    const [ppNormal, setPpNormal] = useState(true)
 
     const [state, dispatch] = useContext (ProductContext)
     const productoGetContext = [...state.product].sort((a, b) => a.codigo - (b.codigo))
@@ -216,6 +218,13 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     const irAPagar = (event) => {
         event.preventDefault()
 
+        if (screenWidth < 576) {
+            setPpNormal(false)
+        }
+        else {
+            setPpNormal(true)
+        }
+
         setFormularioCompleto (false)
         if (enviaADomicilio) {
             console.log ("Revisando campos Domicilio ", updateForm_user)
@@ -249,6 +258,7 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
         } else {
             alert ('Debe seleccionar una opcion: envio o retiro')
         }
+
     }
 
 
@@ -270,11 +280,9 @@ return (
     <div className="pagar_carro" >
         <br/>
         <div className="row g-2">
-
-
         <br/><br/>
-            <div className="contenedor_650">
-            <div className='container-md'>
+
+            <div className="col col-lg justify-content-center">
                 <br/>
 
                 <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center", height: "150px"}}>
@@ -291,8 +299,8 @@ return (
                     {!estadoWait && !estadoProductosSin && 
                     <div> 
                         <br/>
-                        <h4>Sus  productos  están  reservados</h4>
-                        <h5>(tiene 15 minutos para realizar el pago de éstos)</h5>
+                        <h4>Sus productos están reservados</h4>
+                        <h5>(tiene 15  minutos para  pagar)</h5>
                         <br/>
                     </div>
                     }
@@ -322,15 +330,15 @@ return (
                 <div className="bs-warning-rgb" style={{ border: "solid black",  borderRadius: "2%", color: "black", textAlign: "center"}}>
                     <div className="container text-center">
                         <br/>
-                        <div className="row">
-                            <div className="col col-md-auto" style={{textAlign: "right", width: "300px"}}>
+                        <div className="row justify-content-center">
+                            <div className="col col-auto " style={{textAlign: "left"}}>
                                 <h4>Neto</h4>
                                 <h4>IVA</h4>
                                 <h4>SubTotal</h4>
                                 <h4>Gastos de Envío</h4>
                                 <h4>Total</h4>
                             </div>
-                            <div className="col col-md-auto" style={{textAlign: "right", width: "150px"}}>
+                            <div className="col col-auto" style={{textAlign: "right"}}>
                                 <h4>$ {totalNeto.toLocaleString('es-CL', {style: 'decimal'})} </h4>
                                 <h4>$ {totalIVA.toLocaleString('es-Cl',  {style: 'decimal'})} </h4>
                                 <h4>$ {totalPesos.toLocaleString('es-CL',{style: 'decimal'})} </h4>
@@ -343,58 +351,49 @@ return (
                 </div>
                 <br/>
 
-                { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD2'} totalValue = {pagarPaypal} /> }
-            </div>
             </div>
 
+            <div className='col col-lg justify-content-center'>
+                <h4>Información de envío</h4>
+                <h5>¿ Cómo quieres recibir tu pedido ?</h5> 
 
-            <br/>
-            <div className="contenedor_650">
-                <div className='container-md'>
-                    <h4>Información de envío</h4>
-                    <h5>¿ Cómo quieres recibir tu pedido ?</h5> 
-                    
-                    <div className="row g-1">
-                        <div className="col-sm" >
-                            {!enviaADomicilio && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
-                            { enviaADomicilio && <button type="button" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}}>Envío a domicilio</button>}
-                            {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary"   style={{width: "250px", marginLeft: "20px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
-                            { retiraEnTienda  && <button type="button" className="btn p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}}>Retiro en tienda</button>}
-                        </div>
-                        <br/><br/><br/>
+                <div className="row justify-content-center py-2">
+                    <div className="col-12 col-md-auto d-flex flex-column flex-md-row align-items-center">
+                        {!enviaADomicilio && <button type="button" className="btn btn-outline-primary rounded-3 m-2" style={{width: "250px"}} onClick= { envioDomicilio }>Envío a domicilio</button>}
+                        { enviaADomicilio && <button type="button" className="btn text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3 m-2" style={{width: "250px"}}>Envío a domicilio</button>}
+                        {!retiraEnTienda  && <button type="button" className="btn btn-outline-primary rounded-3 m-2" style={{width: "250px"}} onClick={ retiraTienda }>Retiro en tienda</button>}
+                        { retiraEnTienda  && <button type="button" className="btn text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3 m-2" style={{width: "250px"}}>Retiro en tienda</button>}
                     </div>
+                </div>
 
-                    {!enviaADomicilio && !retiraEnTienda && <div style={{height: "373px"}}>
-                    </div>}
-
-                    {retiraEnTienda &&
-                    <form>
-                        <div className="row g-1">
-                            <div className="col-sm">
-                                <label  form="nombre" className="form-label">Nombre</label>
-                                <input  type="text"
-                                        name="nombre"
-                                        className="form-control" 
-                                        id="nombre"  
-                                        aria-label="nombre"
-                                        value={updateForm_user.nombre}
-                                        onChange={handleupdateFormChange}
-                                        required />
+                {retiraEnTienda &&
+                <form>
+                    <div className="row g-1">
+                        <div className="col-sm gap-3 justify-content-center">
+                            <label  form="nombre" className="form-label">Nombre</label>
+                            <input  type="text"
+                                    name="nombre"
+                                    className="form-control" 
+                                    id="nombre"  
+                                    aria-label="nombre"
+                                    value={updateForm_user.nombre}
+                                    onChange={handleupdateFormChange}
+                                    required />
                             </div>
-                            <div className="col-sm">
-                                <label  form="apellido" className="form-label">Apellido</label>
-                                <input  type="text" 
-                                        name="apellido"
-                                        className="form-control" 
-                                        id="apellido"  
-                                        aria-label="apellido"
-                                        value={updateForm_user.apellido}
-                                        onChange={handleupdateFormChange}
-                                        required />
-                            </div>
+                        <div className="col-sm gap-3 justify-content-center">
+                            <label  form="apellido" className="form-label">Apellido</label>
+                            <input  type="text" 
+                                    name="apellido"
+                                    className="form-control" 
+                                    id="apellido"  
+                                    aria-label="apellido"
+                                    value={updateForm_user.apellido}
+                                    onChange={handleupdateFormChange}
+                                    required />
                         </div>
-                        <div className="row g-1">
-                            <div className="col-sm">
+                    </div>
+                    <div className="row g-1">
+                            <div className="col-sm gap-3 justify-content-center">
                                 <label  form="email" className="form-label">eMail</label>
                                 <input  type="email" 
                                         name="email"
@@ -404,7 +403,7 @@ return (
                                         onChange={handleupdateFormChange} 
                                         required />
                             </div>
-                            <div className="col-sm">
+                            <div className="col-sm gap-3 justify-content-center">
                                 <label  form="telefono" className="form-label">Teléfono</label>
                                 <input  type="text" 
                                         name="telefono" 
@@ -414,13 +413,12 @@ return (
                                         onChange={handleupdateFormChange}
                                         required />
                             </div>
-                            <div style={{height: "229px"}}>
-                            </div>
-                        </div>
-                    </form>}
+                    </div>
 
-                    {enviaADomicilio &&
-                    <form>
+                </form>}
+
+                {enviaADomicilio &&
+                <form>
                         <div className="row g-1">
                             <div className="col-sm">
                                 <label  form="nombre" className="form-label">Nombre</label>
@@ -501,22 +499,28 @@ return (
                                 </div>
                             </div>
                         </div>
-                    </form>}
+                </form>}
+                <br/>
 
-                    <div className="row">
-                        <div className="col col-md-auto" >
-                            <button type="button" className="p-2 text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3" style={{width: "250px", marginLeft: "20px", paddingRight: "20px"}} onClick= { regresar }>Regresar sin comprar</button>
-                            {!estadoWait && !estadoProductosSin && <button type="button" className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{width: "250px", marginLeft: "20px"}} onClick= { irAPagar }>Pagar</button>}
-                        </div>
-                        <br/>
+                <div className="row justify-content-center py-2">
+                    <div className="col-12 col-md-auto d-flex flex-column flex-md-row align-items-center">
+                        <button type="button" className="btn text-primary-emphasis bg-primary-subtle border border-primary-subtle rounded-3 m-2" style={{ width: "250px"}} onClick={regresar}>
+                            Regresar sin comprar
+                        </button>
+                        {!estadoWait && !estadoProductosSin &&  <button type="button" className="btn text-success-emphasis bg-success-subtle border border-success-subtle rounded-3 m-2" style={{ width: "250px"}} onClick={irAPagar}>
+                            Pagar
+                        </button>}
                     </div>
-                    <br/>
                 </div>
+                <br/>
+
             </div>
 
+            { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD 2'} totalValue = {pagarPaypal} /> }
 
         </div>
-        <br/>
+
     </div>
+
 )
 }

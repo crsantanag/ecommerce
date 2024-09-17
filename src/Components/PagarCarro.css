@@ -4,16 +4,30 @@
 
 .contenedor_650 {
     background-color: rgb(230, 230, 230);
-    margin-left: 100px;
-    margin-right: 40px;
     max-width: 600px;
-    border: solid black;
-    border-radius: 2%;
+    align-items: center;
+    justify-items: center;
+    justify-content: center;
+}
+
+.alto_373 {
+    height: 255px;
+}
+
+.alto_229 {
+    height: 114px;
 }
 
 @media (max-width: 768px) {
     .contenedor_650 {
-        margin-left: 10px; 
-        margin-right: 10px
+        margin-left: 0px; 
+        margin-right: 5px
+    }
+    .alto_373 {
+        height: 30px;
+    }
+
+    .alto_229 {
+        height: 30px;
     }
 }
