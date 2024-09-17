@@ -1,5 +1,7 @@
 .pagar_carro {
-    background-color: rgb(230, 230, 230)
+    background-color: rgb(230, 230, 230);
+    padding-right: 20px;
+    padding-left: 20px;
 }
 
 .contenedor_650 {

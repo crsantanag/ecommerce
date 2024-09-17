@@ -279,12 +279,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 return (
     <div className="pagar_carro" >
         <br/>
-        <div className="row g-2">
+        <div className="row g-5">
         <br/><br/>
 
             <div className="col col-lg justify-content-center">
-                <br/>
-
                 <div className="p-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-3" style={{textAlign: "center", height: "150px"}}>
                 
                     {estadoWait &&  
@@ -353,7 +351,7 @@ return (
 
             </div>
 
-            <div className='col col-lg justify-content-center'>
+            <div className='col col-lg justify-content-center text-center'>
                 <h4>Información de envío</h4>
                 <h5>¿ Cómo quieres recibir tu pedido ?</h5> 
 
@@ -367,10 +365,10 @@ return (
                 </div>
 
                 {retiraEnTienda &&
-                <form>
+                <form className="text-left" style={{textAlign: "left"}}>
                     <div className="row g-1">
                         <div className="col-sm gap-3 justify-content-center">
-                            <label  form="nombre" className="form-label">Nombre</label>
+                            <label  form="nombre" className="form-label text-left">Nombre</label>
                             <input  type="text"
                                     name="nombre"
                                     className="form-control" 
@@ -418,7 +416,7 @@ return (
                 </form>}
 
                 {enviaADomicilio &&
-                <form>
+                <form className="text-left" style={{textAlign: "left"}}>
                         <div className="row g-1">
                             <div className="col-sm">
                                 <label  form="nombre" className="form-label">Nombre</label>
@@ -513,11 +511,10 @@ return (
                     </div>
                 </div>
                 <br/>
+                { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD 2'} totalValue = {pagarPaypal} /> }
 
             </div>
-
-            { estadoEnvio && <PaypalButton invoice = {'CD 1 \n CD 2'} totalValue = {pagarPaypal} /> }
-
+            
         </div>
 
     </div>
