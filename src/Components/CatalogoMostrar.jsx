@@ -394,7 +394,8 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       </div>}
 
       {!estatusProductos && <div>
-        <h3> Espere algunos segundos ... </h3>
+        <h3> Conectando con el backend</h3>
+        <h3> Espere algunos segundos... </h3>
         <h3> (se está usando una versión gratis)</h3>
       </div>}
 
