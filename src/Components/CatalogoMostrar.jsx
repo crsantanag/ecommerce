@@ -8,6 +8,7 @@ import jwt_decode from "jwt-decode"
 import './CatalogoMostrar.css'
 
 export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
+
   console.count ('CATALOGO_MOSTRAR')
 
   const navigate   = useNavigate();
@@ -38,8 +39,6 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
   const [productos, setProductos] = useState([])
   const [estatusProductos, setEstatusProductos] = useState (false)
 
-  AnulaReservas()
-  
   const getAllProducts = async () => {
     const { data } = await axios.get ("https://backend-proyecto-5-53yd.onrender.com/api/v1/products")
     dispatch ({ type: 'OBTENER_PRODUCTO', payload: data })
@@ -139,7 +138,7 @@ export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUs
       setEstatusProductos (productos.length !== 0)
     }
     filtrarProductos()
-    },[filtro, state, productos])
+  },[filtro, state, productos])
 
 
   const defineMostrar = () => {
