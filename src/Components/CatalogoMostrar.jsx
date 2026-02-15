@@ -8,7 +8,7 @@ import jwt_decode from "jwt-decode"
 import './CatalogoMostrar.css'
 
 export const CatalogoMostrar = ({ nameState, updateNameState, userName, updateUserName, cartState, updateCartState, userCart, updateUserCart }) => {
-  console.log ('CATALOGO_MOSTRAR')
+  console.count ('CATALOGO_MOSTRAR')
 
   const navigate   = useNavigate();
   const  { filtro }  = useParams();

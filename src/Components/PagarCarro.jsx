@@ -48,6 +48,22 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
     }
     const [updateForm_user, setUpdateForm_user] = useState (initialUpdateForm_user)
 
+    function getFormattedTimestamp() {
+        const now = new Date()
+
+        const pad = (n) => String(n).padStart(2, "0")
+
+        const year = now.getFullYear()
+        const month = pad(now.getMonth() + 1)
+        const day = pad(now.getDate())
+
+        const hours = pad(now.getHours())
+        const minutes = pad(now.getMinutes())
+        const seconds = pad(now.getSeconds())
+
+        const ms = String(now.getMilliseconds()).padStart(3, "0")
+        return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}.${ms}`
+    }
 
     const hacerReservas = async () => {
         setProductos (productoGetContext)
@@ -108,8 +124,10 @@ export const PagarCarro = ({ nameState, updateNameState, userName, updateUserNam
 
                         try 
                         {
+                            console.log("RESERVA START", getFormattedTimestamp(), objeto.nombre)
                             await axios.put ( urlProduct, objeto)
                             setEstadoProductosCon (true)
+                            console.log("RESERVA END", getFormattedTimestamp(), objeto.nombre)
                         } catch (error) {
                             console.log ('Error en put', error)
                         }

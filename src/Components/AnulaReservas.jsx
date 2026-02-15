@@ -58,6 +58,7 @@ export const AnulaReservas = async () => {
         }
 
     return (
-    <></>
+    <>
+    </>
     )
 }
